@@ -1,0 +1,120 @@
+name: Bug Report
+description: Report a bug or unexpected behavior
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug! Please fill out the information below to help us investigate.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: A clear and concise description of what the bug is.
+      placeholder: Tell us what you see!
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: Steps to reproduce the behavior
+      placeholder: |
+        1. Include nfx-json headers...
+        2. Create Document/Serializer instance...
+        3. Call method X with parameters Y...
+        4. See error...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+      placeholder: I expected...
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      description: What actually happened?
+      placeholder: Instead, I got...
+    validations:
+      required: true
+
+  - type: textarea
+    id: code
+    attributes:
+      label: Code Sample
+      description: Minimal code to reproduce the issue
+      render: cpp
+      placeholder: |
+        #include <nfx/json/Document.h>
+        #include <nfx/json/SchemaValidator.h>
+
+        int main() {
+            using namespace nfx::json;
+
+            auto doc = Document::fromString(R"({"name": "test", "value": 42})");
+            // Your code here that reproduces the issue
+
+            return 0;
+        }
+    validations:
+      required: false
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating System
+      description: What OS are you running?
+      options:
+        - Windows
+        - Linux
+        - macOS
+        - Other
+      multiple: true
+    validations:
+      required: true
+
+  - type: input
+    id: compiler
+    attributes:
+      label: Compiler
+      description: Which compiler and version? (e.g., GCC 14.2.0, MSVC 19.44, Clang 19.1)
+      placeholder: "GCC 14.2.0"
+    validations:
+      required: true
+
+  - type: input
+    id: cmake
+    attributes:
+      label: CMake Version
+      description: What version of CMake are you using?
+      placeholder: "3.30.0"
+    validations:
+      required: false
+
+  - type: input
+    id: version
+    attributes:
+      label: nfx-json Version
+      description: Which version of nfx-json are you using?
+      placeholder: "1.0.0"
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Add any other context about the problem here (error messages, stack traces, etc.)
+      placeholder: Error output, logs, screenshots, etc.
+    validations:
+      required: false

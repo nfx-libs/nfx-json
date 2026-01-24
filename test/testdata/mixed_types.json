@@ -1,0 +1,57 @@
+{
+    "string": "Hello, World!",
+    "integer": 42,
+    "negative": -123,
+    "float": 3.14159265359,
+    "scientific": 1.23e10,
+    "boolean_true": true,
+    "boolean_false": false,
+    "null_value": null,
+    "empty_string": "",
+    "empty_object": {},
+    "empty_array": [],
+    "unicode": "Hello, 世界! 🌍",
+    "escaped": "Line1\nLine2\tTabbed\"Quoted\"",
+    "array_of_primitives": [
+        1,
+        "two",
+        3.0,
+        true,
+        false,
+        null
+    ],
+    "object_with_arrays": {
+        "numbers": [
+            1,
+            2,
+            3,
+            4,
+            5
+        ],
+        "strings": [
+            "a",
+            "b",
+            "c"
+        ],
+        "mixed": [
+            1,
+            "two",
+            true,
+            null,
+            {
+                "nested": "object"
+            }
+        ]
+    },
+    "array_of_objects": [
+        {
+            "key": "value1"
+        },
+        {
+            "key": "value2"
+        },
+        {
+            "key": "value3"
+        }
+    ]
+}

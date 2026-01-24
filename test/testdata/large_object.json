@@ -1,0 +1,447 @@
+{
+    "company": {
+        "name": "TechCorp International",
+        "founded": "1998-03-15",
+        "headquarters": {
+            "address": "1000 Innovation Drive",
+            "city": "San Francisco",
+            "state": "California",
+            "country": "USA",
+            "postalCode": "94105",
+            "coordinates": {
+                "latitude": 37.7749,
+                "longitude": -122.4194
+            }
+        },
+        "contact": {
+            "phone": "+1-555-123-4567",
+            "fax": "+1-555-123-4568",
+            "email": "info@techcorp.com",
+            "website": "https://www.techcorp.com"
+        }
+    },
+    "departments": [
+        {
+            "id": "dept_001",
+            "name": "Engineering",
+            "head": {
+                "employeeId": "emp_100",
+                "name": "Alice Johnson",
+                "title": "VP of Engineering",
+                "email": "alice.johnson@techcorp.com"
+            },
+            "budget": 5000000.00,
+            "headcount": 150,
+            "teams": [
+                {
+                    "name": "Backend",
+                    "lead": "Bob Smith",
+                    "members": 25,
+                    "technologies": [
+                        "C++",
+                        "Python",
+                        "PostgreSQL",
+                        "Redis"
+                    ]
+                },
+                {
+                    "name": "Frontend",
+                    "lead": "Carol White",
+                    "members": 20,
+                    "technologies": [
+                        "TypeScript",
+                        "React",
+                        "GraphQL"
+                    ]
+                },
+                {
+                    "name": "DevOps",
+                    "lead": "David Brown",
+                    "members": 15,
+                    "technologies": [
+                        "Kubernetes",
+                        "Docker",
+                        "Terraform",
+                        "AWS"
+                    ]
+                },
+                {
+                    "name": "QA",
+                    "lead": "Eve Davis",
+                    "members": 18,
+                    "technologies": [
+                        "Selenium",
+                        "Jest",
+                        "Cypress"
+                    ]
+                },
+                {
+                    "name": "Security",
+                    "lead": "Frank Miller",
+                    "members": 12,
+                    "technologies": [
+                        "OWASP",
+                        "Burp Suite",
+                        "Nessus"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "dept_002",
+            "name": "Product",
+            "head": {
+                "employeeId": "emp_200",
+                "name": "Grace Lee",
+                "title": "VP of Product",
+                "email": "grace.lee@techcorp.com"
+            },
+            "budget": 2000000.00,
+            "headcount": 45,
+            "teams": [
+                {
+                    "name": "Product Management",
+                    "lead": "Henry Wilson",
+                    "members": 15,
+                    "technologies": [
+                        "Jira",
+                        "Confluence",
+                        "Figma"
+                    ]
+                },
+                {
+                    "name": "UX Design",
+                    "lead": "Ivy Chen",
+                    "members": 20,
+                    "technologies": [
+                        "Figma",
+                        "Sketch",
+                        "Adobe XD"
+                    ]
+                },
+                {
+                    "name": "Research",
+                    "lead": "Jack Taylor",
+                    "members": 10,
+                    "technologies": [
+                        "UserTesting",
+                        "Hotjar",
+                        "Mixpanel"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "dept_003",
+            "name": "Sales",
+            "head": {
+                "employeeId": "emp_300",
+                "name": "Karen Martinez",
+                "title": "VP of Sales",
+                "email": "karen.martinez@techcorp.com"
+            },
+            "budget": 3000000.00,
+            "headcount": 80,
+            "teams": [
+                {
+                    "name": "Enterprise Sales",
+                    "lead": "Leo Garcia",
+                    "members": 30,
+                    "technologies": [
+                        "Salesforce",
+                        "HubSpot"
+                    ]
+                },
+                {
+                    "name": "SMB Sales",
+                    "lead": "Mia Robinson",
+                    "members": 25,
+                    "technologies": [
+                        "Salesforce",
+                        "Outreach"
+                    ]
+                },
+                {
+                    "name": "Sales Engineering",
+                    "lead": "Noah Clark",
+                    "members": 15,
+                    "technologies": [
+                        "Demo environments",
+                        "POC tools"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "dept_004",
+            "name": "Marketing",
+            "head": {
+                "employeeId": "emp_400",
+                "name": "Olivia Harris",
+                "title": "VP of Marketing",
+                "email": "olivia.harris@techcorp.com"
+            },
+            "budget": 2500000.00,
+            "headcount": 35,
+            "teams": [
+                {
+                    "name": "Content",
+                    "lead": "Peter Lewis",
+                    "members": 12,
+                    "technologies": [
+                        "WordPress",
+                        "Contentful",
+                        "SEMrush"
+                    ]
+                },
+                {
+                    "name": "Digital Marketing",
+                    "lead": "Quinn Walker",
+                    "members": 15,
+                    "technologies": [
+                        "Google Ads",
+                        "Facebook Ads",
+                        "LinkedIn"
+                    ]
+                },
+                {
+                    "name": "Brand",
+                    "lead": "Rachel Hall",
+                    "members": 8,
+                    "technologies": [
+                        "Adobe Creative Suite",
+                        "Canva"
+                    ]
+                }
+            ]
+        }
+    ],
+    "products": [
+        {
+            "id": "prod_001",
+            "name": "CloudSync Pro",
+            "version": "3.5.2",
+            "releaseDate": "2025-06-15",
+            "pricing": {
+                "basic": {
+                    "monthly": 9.99,
+                    "annual": 99.99
+                },
+                "professional": {
+                    "monthly": 29.99,
+                    "annual": 299.99
+                },
+                "enterprise": {
+                    "monthly": 99.99,
+                    "annual": 999.99
+                }
+            },
+            "features": [
+                "Real-time sync",
+                "End-to-end encryption",
+                "Multi-device support",
+                "Offline access",
+                "Version history",
+                "Team collaboration",
+                "API access",
+                "Priority support"
+            ],
+            "platforms": [
+                "Windows",
+                "macOS",
+                "Linux",
+                "iOS",
+                "Android",
+                "Web"
+            ],
+            "integrations": [
+                "Slack",
+                "Microsoft Teams",
+                "Google Workspace",
+                "Dropbox",
+                "OneDrive"
+            ]
+        },
+        {
+            "id": "prod_002",
+            "name": "DataVault Enterprise",
+            "version": "2.1.0",
+            "releaseDate": "2025-03-01",
+            "pricing": {
+                "starter": {
+                    "monthly": 49.99,
+                    "annual": 499.99
+                },
+                "business": {
+                    "monthly": 149.99,
+                    "annual": 1499.99
+                },
+                "enterprise": {
+                    "monthly": 499.99,
+                    "annual": 4999.99
+                }
+            },
+            "features": [
+                "Petabyte-scale storage",
+                "HIPAA compliance",
+                "SOC 2 certified",
+                "Disaster recovery",
+                "Geographic redundancy",
+                "Custom retention policies",
+                "Advanced analytics",
+                "Dedicated support"
+            ],
+            "platforms": [
+                "Cloud",
+                "On-premise",
+                "Hybrid"
+            ],
+            "integrations": [
+                "AWS",
+                "Azure",
+                "GCP",
+                "Snowflake",
+                "Databricks"
+            ]
+        },
+        {
+            "id": "prod_003",
+            "name": "SecureAuth 360",
+            "version": "4.0.1",
+            "releaseDate": "2025-09-20",
+            "pricing": {
+                "basic": {
+                    "monthly": 2.99,
+                    "annual": 29.99,
+                    "perUser": true
+                },
+                "advanced": {
+                    "monthly": 5.99,
+                    "annual": 59.99,
+                    "perUser": true
+                },
+                "enterprise": {
+                    "monthly": 9.99,
+                    "annual": 99.99,
+                    "perUser": true
+                }
+            },
+            "features": [
+                "Multi-factor authentication",
+                "Single sign-on",
+                "Passwordless login",
+                "Biometric support",
+                "Risk-based authentication",
+                "Session management",
+                "Audit logging",
+                "Compliance reporting"
+            ],
+            "platforms": [
+                "Web",
+                "Mobile SDK",
+                "Desktop SDK"
+            ],
+            "integrations": [
+                "LDAP",
+                "Active Directory",
+                "Okta",
+                "Auth0",
+                "SAML",
+                "OAuth 2.0"
+            ]
+        }
+    ],
+    "financials": {
+        "fiscalYear": 2025,
+        "revenue": {
+            "q1": 45000000.00,
+            "q2": 52000000.00,
+            "q3": 58000000.00,
+            "q4": 65000000.00,
+            "total": 220000000.00
+        },
+        "expenses": {
+            "q1": 35000000.00,
+            "q2": 38000000.00,
+            "q3": 42000000.00,
+            "q4": 45000000.00,
+            "total": 160000000.00
+        },
+        "profit": {
+            "q1": 10000000.00,
+            "q2": 14000000.00,
+            "q3": 16000000.00,
+            "q4": 20000000.00,
+            "total": 60000000.00
+        }
+    },
+    "locations": [
+        {
+            "city": "San Francisco",
+            "country": "USA",
+            "employees": 500,
+            "type": "headquarters"
+        },
+        {
+            "city": "New York",
+            "country": "USA",
+            "employees": 200,
+            "type": "regional"
+        },
+        {
+            "city": "London",
+            "country": "UK",
+            "employees": 150,
+            "type": "regional"
+        },
+        {
+            "city": "Berlin",
+            "country": "Germany",
+            "employees": 100,
+            "type": "office"
+        },
+        {
+            "city": "Tokyo",
+            "country": "Japan",
+            "employees": 75,
+            "type": "office"
+        },
+        {
+            "city": "Sydney",
+            "country": "Australia",
+            "employees": 50,
+            "type": "office"
+        },
+        {
+            "city": "Singapore",
+            "country": "Singapore",
+            "employees": 80,
+            "type": "regional"
+        },
+        {
+            "city": "Toronto",
+            "country": "Canada",
+            "employees": 60,
+            "type": "office"
+        },
+        {
+            "city": "Paris",
+            "country": "France",
+            "employees": 45,
+            "type": "office"
+        },
+        {
+            "city": "Amsterdam",
+            "country": "Netherlands",
+            "employees": 40,
+            "type": "office"
+        }
+    ],
+    "metadata": {
+        "generatedAt": "2025-11-29T12:00:00Z",
+        "version": "1.0.0",
+        "schemaVersion": 5,
+        "checksum": "f7e6d5c4b3a2918273645",
+        "source": "corporate-api-v3"
+    }
+}
