@@ -31,12 +31,15 @@
 #include <string>
 #include <string_view>
 
+#if defined( __SSE2__ ) || defined( _M_X64 ) || ( defined( _M_IX86_FP ) && _M_IX86_FP >= 2 )
+#    include <emmintrin.h>
+#endif
+
 namespace nfx::json
 {
     /**
      * @brief High-performance JSON writer
      * @details Writes JSON directly to string buffer without building DOM.
-     *          Optimized for speed similar to System.Text.Json in .NET.
      */
     class JsonWriter
     {
@@ -141,13 +144,53 @@ namespace nfx::json
         {
             m_buffer.push_back( '"' );
 
-            // Fast path: no escaping needed
+#if defined( __SSE2__ ) || defined( _M_X64 ) || ( defined( _M_IX86_FP ) && _M_IX86_FP >= 2 )
+            static constexpr char hex[] = "0123456789abcdef";
             size_t lastPos = 0;
-            for( size_t i = 0; i < str.size(); ++i )
+            size_t i = 0;
+
+            // Process 16 bytes at a time with SIMD
+            const __m128i quote = _mm_set1_epi8( '"' );
+            const __m128i backslash = _mm_set1_epi8( '\\' );
+            const __m128i control = _mm_set1_epi8( 0x1F ); // Characters < 0x20
+
+            while( i + 16 <= str.size() )
+            {
+                __m128i chunk = _mm_loadu_si128( reinterpret_cast<const __m128i*>( str.data() + i ) );
+
+                // Check for quote, backslash, or control chars
+                __m128i cmp_quote = _mm_cmpeq_epi8( chunk, quote );
+                __m128i cmp_backslash = _mm_cmpeq_epi8( chunk, backslash );
+                __m128i cmp_control = _mm_cmplt_epi8( chunk, control ); // Signed comparison for < 0x20
+
+                __m128i needs_escape = _mm_or_si128( _mm_or_si128( cmp_quote, cmp_backslash ), cmp_control );
+
+                int mask = _mm_movemask_epi8( needs_escape );
+
+                if( mask == 0 )
+                {
+                    // No escaping needed in this chunk, skip forward
+                    i += 16;
+                }
+                else
+                {
+                    // Found character that needs escaping, fall back to scalar
+                    break;
+                }
+            }
+
+            // Append the SIMD-processed portion (if any)
+            if( i > lastPos )
+            {
+                m_buffer.append( str.data() + lastPos, i - lastPos );
+                lastPos = i;
+            }
+
+            // Scalar fallback for remaining characters
+            for( ; i < str.size(); ++i )
             {
                 unsigned char c = static_cast<unsigned char>( str[i] );
 
-                // Check if escaping needed
                 if( c == '"' || c == '\\' || c < 0x20 )
                 {
                     // Append unescaped portion
@@ -182,10 +225,10 @@ namespace nfx::json
                             m_buffer.push_back( 't' );
                             break;
                         default:
-                            // \uXXXX format for control characters
-                            char hexBuf[7];
-                            snprintf( hexBuf, sizeof( hexBuf ), "u%04x", c );
-                            m_buffer.append( hexBuf );
+                            // \uXXXX format with lookup table
+                            m_buffer.append( "u00" );
+                            m_buffer.push_back( hex[( c >> 4 ) & 0xF] );
+                            m_buffer.push_back( hex[c & 0xF] );
                             break;
                     }
 
@@ -198,7 +241,61 @@ namespace nfx::json
             {
                 m_buffer.append( str.data() + lastPos, str.size() - lastPos );
             }
+#else
+            // Fallback scalar path for non-SSE2 platforms
+            static constexpr char hex[] = "0123456789abcdef";
+            size_t lastPos = 0;
+            for( size_t i = 0; i < str.size(); ++i )
+            {
+                unsigned char c = static_cast<unsigned char>( str[i] );
 
+                if( c == '"' || c == '\\' || c < 0x20 )
+                {
+                    if( i > lastPos )
+                    {
+                        m_buffer.append( str.data() + lastPos, i - lastPos );
+                    }
+
+                    m_buffer.push_back( '\\' );
+                    switch( c )
+                    {
+                        case '"':
+                            m_buffer.push_back( '"' );
+                            break;
+                        case '\\':
+                            m_buffer.push_back( '\\' );
+                            break;
+                        case '\b':
+                            m_buffer.push_back( 'b' );
+                            break;
+                        case '\f':
+                            m_buffer.push_back( 'f' );
+                            break;
+                        case '\n':
+                            m_buffer.push_back( 'n' );
+                            break;
+                        case '\r':
+                            m_buffer.push_back( 'r' );
+                            break;
+                        case '\t':
+                            m_buffer.push_back( 't' );
+                            break;
+                        default:
+                            m_buffer.append( "u00" );
+                            m_buffer.push_back( hex[( c >> 4 ) & 0xF] );
+                            m_buffer.push_back( hex[c & 0xF] );
+                            break;
+                    }
+
+                    lastPos = i + 1;
+                }
+            }
+
+            if( lastPos < str.size() )
+            {
+                m_buffer.append( str.data() + lastPos, str.size() - lastPos );
+            }
+#endif
             m_buffer.push_back( '"' );
         }
 

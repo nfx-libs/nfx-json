@@ -37,15 +37,15 @@
 
 | Operation                   | Linux Clang | Windows MinGW GCC | Windows MSVC |
 | --------------------------- | :---------: | :---------------: | :----------: |
-| **Get by Key (Top Level)**  |   4.64 ns   |      2.49 ns      |   1.59 ns    |
-| **Get by Key (Nested)**     |   17.7 ns   |      6.51 ns      |   16.3 ns    |
-| **Get by Pointer (Top)**    |   21.9 ns   |      21.6 ns      |   28.0 ns    |
-| **Get by Pointer (Nested)** |   44.2 ns   |      48.5 ns      |   61.6 ns    |
-| **Get Deep Nested (3 Lvl)** |   26.1 ns   |      13.6 ns      |   24.8 ns    |
-| **Get Deep Nested (4 Lvl)** |   35.0 ns   |      18.7 ns      |   36.6 ns    |
-| **Has Field (Exists)**      |   24.2 ns   |      17.4 ns      |   31.8 ns    |
-| **Has Field (Not Exists)**  |   30.3 ns   |      26.4 ns      |   40.7 ns    |
-| **Has Field (Nested)**      |   93.8 ns   |      98.6 ns      |   118  ns    |
+| **Get by Key (Top Level)**  |   2.29 ns   |      2.49 ns      |   1.59 ns    |
+| **Get by Key (Nested)**     |   5.70 ns   |      6.51 ns      |   16.3 ns    |
+| **Get by Pointer (Top)**    |   20.5 ns   |      21.6 ns      |   28.0 ns    |
+| **Get by Pointer (Nested)** |   42.5 ns   |      48.5 ns      |   61.6 ns    |
+| **Get Deep Nested (3 Lvl)** |   11.8 ns   |      13.6 ns      |   24.8 ns    |
+| **Get Deep Nested (4 Lvl)** |   16.8 ns   |      18.7 ns      |   36.6 ns    |
+| **Has Field (Exists)**      |   16.5 ns   |      17.4 ns      |   31.8 ns    |
+| **Has Field (Not Exists)**  |   24.9 ns   |      26.4 ns      |   40.7 ns    |
+| **Has Field (Nested)**      |   81.8 ns   |      98.6 ns      |   118  ns    |
 
 ## JSON Iteration
 
@@ -53,9 +53,9 @@
 
 | Operation                   | Linux Clang | Windows MinGW GCC | Windows MSVC |
 | --------------------------- | :---------: | :---------------: | :----------: |
-| **Object Field Iteration**  |   78.1 ns   |      86.7 ns      |   62.2 ns    |
-| **Array Element Iteration** |   43.7 ns   |      36.3 ns      |   61.8 ns    |
-| **Nested Object Iteration** |   2757 ns   |      5484 ns      |   6111 ns    |
+| **Object Field Iteration**  |   61.9 ns   |      86.7 ns      |   62.2 ns    |
+| **Array Element Iteration** |   37.9 ns   |      36.3 ns      |   61.8 ns    |
+| **Nested Object Iteration** |   2713 ns   |      5484 ns      |   6111 ns    |
 
 ## JSON Modification
 
@@ -71,8 +71,8 @@
 | **Set Nested (3 Levels)**  |   151  ns   |      270  ns      |   274  ns    |
 | **Set Nested (4 Levels)**  |   197  ns   |      373  ns      |   358  ns    |
 | **Add Object Field (Seq)** |   456  ns   |      636  ns      |   761  ns    |
-| **Append Array Element**   |   530  ns   |      1034 ns      |   1056 ns    |
-| **Append to Large Array**  |   5302 ns   |      8838 ns      |   8722 ns    |
+| **Append Array Element**   |   505  ns   |      1034 ns      |   1056 ns    |
+| **Append to Large Array**  |   4597 ns   |      8838 ns      |   8722 ns    |
 
 ## JSON Parsing
 
@@ -80,13 +80,13 @@
 
 | Operation                | Linux Clang | Windows MinGW GCC | Windows MSVC |
 | ------------------------ | :---------: | :---------------: | :----------: |
-| **Parse Small Object**   |   225  ns   |      373 ns       |   420  ns    |
-| **Parse Medium Object**  |   1031 ns   |      1640 ns      |   2316 ns    |
-| **Parse Large Object**   |   3570 ns   |      5179 ns      |   7966 ns    |
-| **Parse Nested Objects** |   475  ns   |      862 ns       |   906  ns    |
-| **Parse Small Array**    |   165  ns   |      211 ns       |   334  ns    |
-| **Parse Large Array**    |   2681 ns   |      4201 ns      |   5036 ns    |
-| **Parse Mixed Types**    |   801  ns   |      1179 ns      |   1747 ns    |
+| **Parse Small Object**   |   212  ns   |      373 ns       |   392  ns    |
+| **Parse Medium Object**  |   1031 ns   |      1640 ns      |   2122 ns    |
+| **Parse Large Object**   |   3552 ns   |      5179 ns      |   7386 ns    |
+| **Parse Nested Objects** |   475  ns   |      862 ns       |   913  ns    |
+| **Parse Small Array**    |   131  ns   |      211 ns       |   315  ns    |
+| **Parse Large Array**    |   2592 ns   |      4201 ns      |   4736 ns    |
+| **Parse Mixed Types**    |   782  ns   |      1179 ns      |   1624 ns    |
 
 ## Schema Generation
 
@@ -94,12 +94,12 @@
 
 | Operation                   | Linux Clang | Windows MinGW GCC | Windows MSVC |
 | --------------------------- | :---------: | :---------------: | :----------: |
-| **Generate from Small Doc** |   2.09 us   |      3.25 us      |   3.34 us    |
-| **Generate from Large Doc** |   9.29 us   |      15.3 us      |   15.2 us    |
-| **Generate from 10 Docs**   |   22.3 us   |      35.5 us      |   38.2 us    |
-| **Generate from 100 Docs**  |   209  us   |      327 us       |   361  us    |
-| **Format Inference**        |   4.63 us   |      6.85 us      |   7.24 us    |
-| **Constraint Inference**    |   107  us   |      163 us       |   222  us    |
+| **Generate from Small Doc** |   1.92 us   |      3.25 us      |   3.34 us    |
+| **Generate from Large Doc** |   8.41 us   |      15.3 us      |   15.2 us    |
+| **Generate from 10 Docs**   |   20.8 us   |      35.5 us      |   38.2 us    |
+| **Generate from 100 Docs**  |   195  us   |      327 us       |   361  us    |
+| **Format Inference**        |   4.30 us   |      6.85 us      |   7.24 us    |
+| **Constraint Inference**    |   101  us   |      163 us       |   222  us    |
 
 ## Schema Validation
 
@@ -114,6 +114,34 @@
 | **Validate with Errors**    |   2.66 us   |      4.28 us      |   4.20 us    |
 | **Validate Deeply Nested**  |  0.868 us   |      2.19 us      |   1.40 us    |
 
+## JSON Serialization
+
+### Write to String (Compact)
+
+| Operation                   | Linux Clang | Windows MinGW GCC | Windows MSVC |
+| --------------------------- | :---------: | :---------------: | :----------: |
+| **Serialize Small Object**  |  97.6  ns   |      116  ns      |   111  ns    |
+| **Serialize Medium Object** |   270  ns   |      307  ns      |   275  ns    |
+| **Serialize Large Object**  |   2709 ns   |      3106 ns      |   2531 ns    |
+| **Serialize Small Array**   |  91.0  ns   |      102  ns      |   148  ns    |
+| **Serialize Large Array**   |   9632 ns   |      9892 ns      |   11323 ns   |
+| **Serialize Nested**        |   113  ns   |      120  ns      |   124  ns    |
+| **Serialize String-Heavy**  |   309  ns   |      327  ns      |   315  ns    |
+
+### Write to String (Pretty Print, indent=2)
+
+| Operation                   | Linux Clang | Windows MinGW GCC | Windows MSVC |
+| --------------------------- | :---------: | :---------------: | :----------: |
+| **Serialize Small Object**  |   110  ns   |      119  ns      |   144  ns    |
+| **Serialize Medium Object** |   299  ns   |      353  ns      |   376  ns    |
+| **Serialize Large Object**  |   3071 ns   |      3494 ns      |   3149 ns    |
+
+### Round-Trip (Parse + Serialize)
+
+| Operation            | Linux Clang | Windows MinGW GCC | Windows MSVC |
+| -------------------- | :---------: | :---------------: | :----------: |
+| **Small Object**     |   327  ns   |      512  ns      |   523  ns    |
+| **Large Array (1K)** |  23625 ns   |     25320 ns      |   31495 ns   |
 
 ## Unique Items
 
@@ -138,4 +166,4 @@
 
 ---
 
-_Updated on January 23, 2026_
+_Updated on January 24, 2026_

@@ -4,8 +4,9 @@
 
 ### Added
 
-- NIL
-
+- **JsonWriter**:
+ - SIMD-optimized string escaping using SSE2 intrinsics
+ - Hex lookup table for `\uXXXX` character encoding
 
 ### Deprecated
 

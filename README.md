@@ -59,6 +59,7 @@ nfx-json is a modern C++20 library for working with JSON documents. It provides 
 
 ### ⚡ Performance Optimized
 
+- SIMD-accelerated JSON serialization (SSE2 string escaping)
 - Zero-copy document navigation with JSON Pointers
 - Fast parsing with `std::from_chars` (no locale overhead)
 - Direct buffer writing for JSON generation (no intermediate DOM)

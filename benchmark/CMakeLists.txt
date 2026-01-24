@@ -63,6 +63,7 @@ list(APPEND benchmark_sources
     BM_JsonParsing.cpp
     BM_JsonSchemaGeneration.cpp
     BM_JsonSchemaValidation.cpp
+    BM_JsonSerialization.cpp
     BM_JsonUniqueItems.cpp
 )
 
