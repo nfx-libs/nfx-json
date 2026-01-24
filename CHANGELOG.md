@@ -4,9 +4,7 @@
 
 ### Added
 
-- **JsonWriter**:
- - SIMD-optimized string escaping using SSE2 intrinsics
- - Hex lookup table for `\uXXXX` character encoding
+- NIL
 
 ### Deprecated
 
@@ -23,6 +21,14 @@
 ### Security
 
 - NIL
+
+## [1.0.1] - 2026-01-24
+
+### Added
+
+- **JsonWriter**:
+  - SIMD-optimized string escaping using SSE2 intrinsics
+  - Hex lookup table for `\uXXXX` character encoding
 
 ## [1.0.0] - 2026-01-23
 

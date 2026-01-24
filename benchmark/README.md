@@ -21,11 +21,11 @@
 
 ### Software Configuration
 
-| Platform    | OS         | Benchmark Framework     | C++ Compiler         |
-| ----------- | ---------- | ----------------------- | -------------------- |
-| **Linux**   | LMDE 7     | Google Benchmark v1.9.5 | Clang 19.1.7-x64     |
-| **Windows** | Windows 10 | Google Benchmark v1.9.5 | MinGW GCC 14.2.0-x64 |
-| **Windows** | Windows 10 | Google Benchmark v1.9.5 | MSVC 19.50.35721-x64 |
+| Platform    | OS         | Benchmark Framework     | C++ Compiler         | nfx-json version |
+| ----------- | ---------- | ----------------------- | -------------------- | :--------------: |
+| **Linux**   | LMDE 7     | Google Benchmark v1.9.5 | Clang 19.1.7-x64     |      1.0.1       |
+| **Windows** | Windows 10 | Google Benchmark v1.9.5 | MinGW GCC 14.2.0-x64 |      1.0.1       |
+| **Windows** | Windows 10 | Google Benchmark v1.9.5 | MSVC 19.50.35721-x64 |      1.0.1       |
 
 ---
 
