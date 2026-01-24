@@ -407,7 +407,7 @@ namespace nfx::json
 
     inline const Document& Document::operator[]( size_t index ) const
     {
-        static const Document nullValue{ nullptr };
+        thread_local const Document nullValue{ nullptr };
         if( type() != Type::Array )
         {
             return nullValue;
