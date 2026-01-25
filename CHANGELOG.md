@@ -6,6 +6,10 @@
 
 - NIL
 
+### Changed
+
+- Bump nfx-stringutils from 0.4.0 to 0.5.0
+
 ### Deprecated
 
 - NIL

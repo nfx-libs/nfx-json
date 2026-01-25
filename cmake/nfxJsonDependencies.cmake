@@ -18,7 +18,7 @@ set(CMAKE_FIND_QUIETLY      ON     )
 # Dependency versions
 #----------------------------------------------
 
-set(NFX_DEPS_NFX_STRINGUTILS_VERSION "0.4.0")
+set(NFX_DEPS_NFX_STRINGUTILS_VERSION "0.5.0")
 set(NFX_DEPS_NFX_CONTAINERS_VERSION  "0.2.0")
 set(NFX_DEPS_NFX_RESOURCE_VERSION    "1.0.0")
 
