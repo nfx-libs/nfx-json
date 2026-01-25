@@ -392,6 +392,26 @@ namespace nfx::json::test
         EXPECT_FALSE( invalidRangeDoc.has_value() );
     }
 
+    TEST( DocumentTest, ParseInvalidUnicodeEscapeSequences )
+    {
+        // Invalid hex digits - non-hexadecimal characters
+        EXPECT_FALSE( Document::fromString( R"({"text": "\uGGGG"})" ).has_value() );
+        EXPECT_FALSE( Document::fromString( R"({"text": "\u12XY"})" ).has_value() );
+        EXPECT_FALSE( Document::fromString( R"({"text": "\uZZZZ"})" ).has_value() );
+
+        // Incomplete escape sequences at end of string
+        EXPECT_FALSE( Document::fromString( R"({"text": "\u"})" ).has_value() );
+        EXPECT_FALSE( Document::fromString( R"({"text": "\u1"})" ).has_value() );
+        EXPECT_FALSE( Document::fromString( R"({"text": "\u12"})" ).has_value() );
+        EXPECT_FALSE( Document::fromString( R"({"text": "\u123"})" ).has_value() );
+
+        // Incomplete escape in middle of string
+        EXPECT_FALSE( Document::fromString( R"({"text": "Hello\u12World"})" ).has_value() );
+
+        // Mixed valid and invalid escapes
+        EXPECT_FALSE( Document::fromString( R"({"text": "\u0041\uGGGG\u0042"})" ).has_value() );
+    }
+
     TEST( DocumentTest, SerializeUnicodeCharacters )
     {
         // Test that unicode characters round-trip correctly

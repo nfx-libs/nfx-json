@@ -113,10 +113,11 @@ namespace nfx::json
                 throw std::runtime_error{ "Invalid unicode escape" };
             }
 
-            std::string hexStr{ m_json.substr( m_pos + 1, 4 ) };
+            // Parse hex code point directly without string allocation
+            const char* start = m_json.data() + m_pos + 1;
             unsigned int codePoint = 0;
-            auto ec = std::from_chars( hexStr.data(), hexStr.data() + 4, codePoint, 16 ).ec;
-            if( ec != std::errc{} )
+            auto [ptr, ec] = std::from_chars( start, start + 4, codePoint, 16 );
+            if( ec != std::errc{} || ptr != start + 4 )
             {
                 throw std::runtime_error{ "Invalid unicode escape" };
             }
@@ -133,11 +134,11 @@ namespace nfx::json
                     throw std::runtime_error{ "Invalid surrogate pair: missing low surrogate" };
                 }
 
-                // Parse low surrogate
-                std::string lowHexStr( m_json.substr( m_pos + 3, 4 ) );
+                // Parse low surrogate directly without string allocation
+                const char* lowStart = m_json.data() + m_pos + 3;
                 unsigned int lowSurrogate = 0;
-                auto lowEc = std::from_chars( lowHexStr.data(), lowHexStr.data() + 4, lowSurrogate, 16 ).ec;
-                if( lowEc != std::errc{} )
+                auto [lowPtr, lowEc] = std::from_chars( lowStart, lowStart + 4, lowSurrogate, 16 );
+                if( lowEc != std::errc{} || lowPtr != lowStart + 4 )
                 {
                     throw std::runtime_error{ "Invalid unicode escape in low surrogate" };
                 }
