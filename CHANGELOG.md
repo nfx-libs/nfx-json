@@ -24,7 +24,8 @@
 ### Fixed
 
 - Fix double-increment bug in `unescapeJsonPointerToken` that caused character skipping
-
+- Fix sign-conversion warnings in JsonWriter and SchemaGenerator
+  
 ### Security
 
 - NIL

@@ -285,9 +285,9 @@ namespace nfx::json
                         bool isIdn = str.find( "xn--" ) != std::string::npos;
                         if( !isIdn )
                         {
-                            for( unsigned char c : str )
+                            for( char ch : str )
                             {
-                                if( c > 127 )
+                                if( static_cast<unsigned char>( ch ) > 127 )
                                 {
                                     isIdn = true;
                                     break;
@@ -312,9 +312,9 @@ namespace nfx::json
                         bool isIdn = str.find( "xn--" ) != std::string::npos;
                         if( !isIdn )
                         {
-                            for( unsigned char c : str )
+                            for( char ch : str )
                             {
-                                if( c > 127 )
+                                if( static_cast<unsigned char>( ch ) > 127 )
                                 {
                                     isIdn = true;
                                     break;
@@ -328,9 +328,9 @@ namespace nfx::json
                     {
                         // Determine if it's IRI (contains non-ASCII)
                         bool isInternationalized = false;
-                        for( unsigned char c : str )
+                        for( char ch : str )
                         {
-                            if( c > 127 )
+                            if( static_cast<unsigned char>( ch ) > 127 )
                             {
                                 isInternationalized = true;
                                 break;

@@ -123,21 +123,21 @@ namespace nfx::json
         {
             char buf[32];
             auto* end = std::to_chars( buf, buf + sizeof( buf ), value ).ptr;
-            m_buffer.append( buf, end - buf );
+            m_buffer.append( buf, static_cast<size_t>( end - buf ) );
         }
 
         void writeUInt( uint64_t value )
         {
             char buf[32];
             auto* end = std::to_chars( buf, buf + sizeof( buf ), value ).ptr;
-            m_buffer.append( buf, end - buf );
+            m_buffer.append( buf, static_cast<size_t>( end - buf ) );
         }
 
         void writeDouble( double value )
         {
             char buf[32];
             auto* end = std::to_chars( buf, buf + sizeof( buf ), value ).ptr;
-            m_buffer.append( buf, end - buf );
+            m_buffer.append( buf, static_cast<size_t>( end - buf ) );
         }
 
         void writeString( std::string_view str )
@@ -384,7 +384,7 @@ namespace nfx::json
         void writeNewlineAndIndent()
         {
             m_buffer.push_back( '\n' );
-            m_buffer.append( m_currentIndent, ' ' );
+            m_buffer.append( static_cast<size_t>( m_currentIndent ), ' ' );
         }
 
         //----------------------------------------------
