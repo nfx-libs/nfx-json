@@ -227,7 +227,7 @@ namespace nfx::json
             if( isDouble )
             {
                 double value = 0.0;
-                auto [ptr, ec] = std::from_chars( numStr.data(), numStr.data() + numStr.size(), value );
+                auto ec = std::from_chars( numStr.data(), numStr.data() + numStr.size(), value ).ec;
                 if( ec != std::errc{} )
                 {
                     throw std::runtime_error{ "Invalid number format" };
@@ -239,7 +239,7 @@ namespace nfx::json
             {
                 // Try parsing as int64_t first
                 int64_t intValue = 0;
-                auto [ptr, ec] = std::from_chars( numStr.data(), numStr.data() + numStr.size(), intValue );
+                auto ec = std::from_chars( numStr.data(), numStr.data() + numStr.size(), intValue ).ec;
                 if( ec == std::errc{} )
                 {
                     return Document{ intValue };
@@ -247,7 +247,7 @@ namespace nfx::json
 
                 // Try as uint64_t
                 uint64_t uintValue = 0;
-                auto [ptr2, ec2] = std::from_chars( numStr.data(), numStr.data() + numStr.size(), uintValue );
+                auto ec2 = std::from_chars( numStr.data(), numStr.data() + numStr.size(), uintValue ).ec;
                 if( ec2 == std::errc{} )
                 {
                     return Document{ uintValue };
@@ -323,7 +323,7 @@ namespace nfx::json
 
                             std::string hexStr{ m_json.substr( m_pos + 1, 4 ) };
                             unsigned int codePoint = 0;
-                            auto [ptr, ec] = std::from_chars( hexStr.data(), hexStr.data() + 4, codePoint, 16 );
+                            auto ec = std::from_chars( hexStr.data(), hexStr.data() + 4, codePoint, 16 ).ec;
                             if( ec != std::errc{} )
                             {
                                 throw std::runtime_error{ "Invalid unicode escape" };
@@ -345,8 +345,8 @@ namespace nfx::json
                                 // Parse low surrogate
                                 std::string lowHexStr( m_json.substr( m_pos + 3, 4 ) );
                                 unsigned int lowSurrogate = 0;
-                                auto [lowPtr, lowEc] =
-                                    std::from_chars( lowHexStr.data(), lowHexStr.data() + 4, lowSurrogate, 16 );
+                                auto lowEc =
+                                    std::from_chars( lowHexStr.data(), lowHexStr.data() + 4, lowSurrogate, 16 ).ec;
                                 if( lowEc != std::errc{} )
                                 {
                                     throw std::runtime_error{ "Invalid unicode escape in low surrogate" };

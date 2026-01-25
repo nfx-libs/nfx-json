@@ -122,22 +122,22 @@ namespace nfx::json
         void writeInt( int64_t value )
         {
             char buf[32];
-            auto [ptr, ec] = std::to_chars( buf, buf + sizeof( buf ), value );
-            m_buffer.append( buf, ptr - buf );
+            auto* end = std::to_chars( buf, buf + sizeof( buf ), value ).ptr;
+            m_buffer.append( buf, end - buf );
         }
 
         void writeUInt( uint64_t value )
         {
             char buf[32];
-            auto [ptr, ec] = std::to_chars( buf, buf + sizeof( buf ), value );
-            m_buffer.append( buf, ptr - buf );
+            auto* end = std::to_chars( buf, buf + sizeof( buf ), value ).ptr;
+            m_buffer.append( buf, end - buf );
         }
 
         void writeDouble( double value )
         {
             char buf[32];
-            auto [ptr, ec] = std::to_chars( buf, buf + sizeof( buf ), value );
-            m_buffer.append( buf, ptr - buf );
+            auto* end = std::to_chars( buf, buf + sizeof( buf ), value ).ptr;
+            m_buffer.append( buf, end - buf );
         }
 
         void writeString( std::string_view str )
