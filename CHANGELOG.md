@@ -21,7 +21,7 @@
 
 ### Fixed
 
-- NIL
+- Fix double-increment bug in `unescapeJsonPointerToken` that caused character skipping
 
 ### Security
 

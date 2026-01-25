@@ -1812,29 +1812,32 @@ namespace nfx::json
         std::string result;
         result.reserve( token.length() );
 
-        for( size_t i = 0; i < token.length(); ++i )
+        size_t i = 0;
+        while( i < token.length() )
         {
             if( token[i] == '~' && i + 1 < token.length() )
             {
                 if( token[i + 1] == '1' )
                 {
                     result += '/';
-                    ++i; // Skip the '1'
+                    i += 2; // Skip '~' and '1'
                 }
                 else if( token[i + 1] == '0' )
                 {
                     result += '~';
-                    ++i; // Skip the '0'
+                    i += 2; // Skip '~' and '0'
                 }
                 else
                 {
                     // Invalid escape sequence, include as-is
                     result += token[i];
+                    ++i;
                 }
             }
             else
             {
                 result += token[i];
+                ++i;
             }
         }
 
