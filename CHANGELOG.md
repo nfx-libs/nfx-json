@@ -10,6 +10,7 @@
 
 - Bump nfx-stringutils from 0.4.0 to 0.5.0
 - Remove unused variables from `std::from_chars` and `std::to_chars` calls
+- Extract `parseUnicodeEscape` helper method to improve JsonParser readability
 
 ### Deprecated
 

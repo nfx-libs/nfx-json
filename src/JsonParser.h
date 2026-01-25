@@ -105,6 +105,121 @@ namespace nfx::json
         {
         }
 
+        void parseUnicodeEscape( std::string& result )
+        {
+            // Unicode escape \uXXXX
+            if( m_pos + 4 >= m_json.size() )
+            {
+                throw std::runtime_error{ "Invalid unicode escape" };
+            }
+
+            std::string hexStr{ m_json.substr( m_pos + 1, 4 ) };
+            unsigned int codePoint = 0;
+            auto ec = std::from_chars( hexStr.data(), hexStr.data() + 4, codePoint, 16 ).ec;
+            if( ec != std::errc{} )
+            {
+                throw std::runtime_error{ "Invalid unicode escape" };
+            }
+
+            // Check for UTF-16 surrogate pairs (for characters beyond BMP)
+            if( codePoint >= UTF16_HIGH_SURROGATE_START && codePoint <= UTF16_HIGH_SURROGATE_END )
+            {
+                // High surrogate - need to get low surrogate
+                m_pos += 4; // Skip the 4 hex digits
+
+                // Check for \uXXXX pattern
+                if( m_pos + 6 >= m_json.size() || m_json[m_pos + 1] != '\\' || m_json[m_pos + 2] != 'u' )
+                {
+                    throw std::runtime_error{ "Invalid surrogate pair: missing low surrogate" };
+                }
+
+                // Parse low surrogate
+                std::string lowHexStr( m_json.substr( m_pos + 3, 4 ) );
+                unsigned int lowSurrogate = 0;
+                auto lowEc = std::from_chars( lowHexStr.data(), lowHexStr.data() + 4, lowSurrogate, 16 ).ec;
+                if( lowEc != std::errc{} )
+                {
+                    throw std::runtime_error{ "Invalid unicode escape in low surrogate" };
+                }
+
+                // Validate low surrogate range
+                if( lowSurrogate < UTF16_LOW_SURROGATE_START || lowSurrogate > UTF16_LOW_SURROGATE_END )
+                {
+                    throw std::runtime_error{ "Invalid low surrogate value" };
+                }
+
+                // Combine surrogates to get actual code point
+                // Formula: (high - 0xD800) * 0x400 + (low - 0xDC00) + 0x10000
+                codePoint = ( ( codePoint - UTF16_HIGH_SURROGATE_START ) << 10 ) +
+                            ( lowSurrogate - UTF16_LOW_SURROGATE_START ) + UTF16_SURROGATE_OFFSET;
+
+                m_pos += 6; // Skip \uXXXX of low surrogate
+            }
+            else if( codePoint >= UTF16_LOW_SURROGATE_START && codePoint <= UTF16_LOW_SURROGATE_END )
+            {
+                // Low surrogate without high surrogate
+                throw std::runtime_error{ "Invalid surrogate pair: unexpected low surrogate" };
+            }
+            else
+            {
+                m_pos += 4; // Skip the 4 hex digits
+            }
+
+            // UTF-8 encoding of the code point
+            if( codePoint < UTF8_1BYTE_MAX )
+            {
+                // 1-byte sequence: 0xxxxxxx
+                result.push_back( static_cast<char>( codePoint ) );
+            }
+            else if( codePoint < UTF8_2BYTE_MAX )
+            {
+                // 2-byte sequence: 110xxxxx 10xxxxxx
+                result.push_back( static_cast<char>( UTF8_2BYTE_LEAD | ( codePoint >> 6 ) ) );
+                result.push_back(
+                    static_cast<char>( UTF8_CONTINUATION_BYTE | ( codePoint & UTF8_CONTINUATION_MASK ) ) );
+            }
+            else if( codePoint < UTF8_3BYTE_MAX )
+            {
+                // 3-byte sequence: 1110xxxx 10xxxxxx 10xxxxxx
+                result.push_back( static_cast<char>( UTF8_3BYTE_LEAD | ( codePoint >> 12 ) ) );
+                result.push_back(
+                    static_cast<char>( UTF8_CONTINUATION_BYTE | ( ( codePoint >> 6 ) & UTF8_CONTINUATION_MASK ) ) );
+                result.push_back(
+                    static_cast<char>( UTF8_CONTINUATION_BYTE | ( codePoint & UTF8_CONTINUATION_MASK ) ) );
+            }
+            else if( codePoint < UTF8_4BYTE_MAX )
+            {
+                // 4-byte sequence: 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+                result.push_back( static_cast<char>( UTF8_4BYTE_LEAD | ( codePoint >> 18 ) ) );
+                result.push_back(
+                    static_cast<char>( UTF8_CONTINUATION_BYTE | ( ( codePoint >> 12 ) & UTF8_CONTINUATION_MASK ) ) );
+                result.push_back(
+                    static_cast<char>( UTF8_CONTINUATION_BYTE | ( ( codePoint >> 6 ) & UTF8_CONTINUATION_MASK ) ) );
+                result.push_back(
+                    static_cast<char>( UTF8_CONTINUATION_BYTE | ( codePoint & UTF8_CONTINUATION_MASK ) ) );
+            }
+            else
+            {
+                throw std::runtime_error{ "Invalid unicode code point" };
+            }
+        }
+
+        void skipWhitespace()
+        {
+            while( m_pos < m_json.size() )
+            {
+                char c = m_json[m_pos];
+                if( c == ' ' || c == '\t' || c == '\n' || c == '\r' )
+                {
+                    ++m_pos;
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
+
         //----------------------------------------------
         // Core parsing methods
         //----------------------------------------------
@@ -314,115 +429,10 @@ namespace nfx::json
                             result.push_back( '\t' );
                             break;
                         case 'u':
-                        {
-                            // Unicode escape \uXXXX
-                            if( m_pos + 4 >= m_json.size() )
-                            {
-                                throw std::runtime_error{ "Invalid unicode escape" };
-                            }
-
-                            std::string hexStr{ m_json.substr( m_pos + 1, 4 ) };
-                            unsigned int codePoint = 0;
-                            auto ec = std::from_chars( hexStr.data(), hexStr.data() + 4, codePoint, 16 ).ec;
-                            if( ec != std::errc{} )
-                            {
-                                throw std::runtime_error{ "Invalid unicode escape" };
-                            }
-
-                            // Check for UTF-16 surrogate pairs (for characters beyond BMP)
-                            if( codePoint >= UTF16_HIGH_SURROGATE_START && codePoint <= UTF16_HIGH_SURROGATE_END )
-                            {
-                                // High surrogate - need to get low surrogate
-                                m_pos += 4; // Skip the 4 hex digits
-
-                                // Check for \uXXXX pattern
-                                if( m_pos + 6 >= m_json.size() || m_json[m_pos + 1] != '\\' ||
-                                    m_json[m_pos + 2] != 'u' )
-                                {
-                                    throw std::runtime_error{ "Invalid surrogate pair: missing low surrogate" };
-                                }
-
-                                // Parse low surrogate
-                                std::string lowHexStr( m_json.substr( m_pos + 3, 4 ) );
-                                unsigned int lowSurrogate = 0;
-                                auto lowEc =
-                                    std::from_chars( lowHexStr.data(), lowHexStr.data() + 4, lowSurrogate, 16 ).ec;
-                                if( lowEc != std::errc{} )
-                                {
-                                    throw std::runtime_error{ "Invalid unicode escape in low surrogate" };
-                                }
-
-                                // Validate low surrogate range
-                                if( lowSurrogate < UTF16_LOW_SURROGATE_START || lowSurrogate > UTF16_LOW_SURROGATE_END )
-                                {
-                                    throw std::runtime_error{ "Invalid low surrogate value" };
-                                }
-
-                                // Combine surrogates to get actual code point Formula:
-                                // (high - 0xD800) * 0x400 + (low -0xDC00) + 0x10000
-                                codePoint = ( ( codePoint - UTF16_HIGH_SURROGATE_START ) << 10 ) +
-                                            ( lowSurrogate - UTF16_LOW_SURROGATE_START ) + UTF16_SURROGATE_OFFSET;
-
-                                m_pos += 6; // Skip \uXXXX  of low surrogate
-                            }
-                            else if( codePoint >= UTF16_LOW_SURROGATE_START && codePoint <= UTF16_LOW_SURROGATE_END )
-                            {
-                                // Low surrogate without high surrogate
-                                throw std::runtime_error{ "Invalid surrogate pair: unexpected low surrogate" };
-                            }
-                            else
-                            {
-                                m_pos += 4; // Skip the 4 hex digits
-                            }
-
-                            // UTF-8 encoding of the code point
-                            if( codePoint < UTF8_1BYTE_MAX )
-                            {
-                                // 1-byte sequence: 0xxxxxxx
-                                result.push_back( static_cast<char>( codePoint ) );
-                            }
-                            else if( codePoint < UTF8_2BYTE_MAX )
-                            {
-                                // 2-byte sequence: 110xxxxx 10xxxxxx
-                                result.push_back( static_cast<char>( UTF8_2BYTE_LEAD | ( codePoint >> 6 ) ) );
-                                result.push_back(
-                                    static_cast<char>(
-                                        UTF8_CONTINUATION_BYTE | ( codePoint & UTF8_CONTINUATION_MASK ) ) );
-                            }
-                            else if( codePoint < UTF8_3BYTE_MAX )
-                            {
-                                // 3-byte sequence: 1110xxxx 10xxxxxx 10xxxxxx
-                                result.push_back( static_cast<char>( UTF8_3BYTE_LEAD | ( codePoint >> 12 ) ) );
-                                result.push_back(
-                                    static_cast<char>(
-                                        UTF8_CONTINUATION_BYTE | ( ( codePoint >> 6 ) & UTF8_CONTINUATION_MASK ) ) );
-                                result.push_back(
-                                    static_cast<char>(
-                                        UTF8_CONTINUATION_BYTE | ( codePoint & UTF8_CONTINUATION_MASK ) ) );
-                            }
-                            else if( codePoint < UTF8_4BYTE_MAX )
-                            {
-                                // 4-byte sequence: 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
-                                result.push_back( static_cast<char>( UTF8_4BYTE_LEAD | ( codePoint >> 18 ) ) );
-                                result.push_back(
-                                    static_cast<char>(
-                                        UTF8_CONTINUATION_BYTE | ( ( codePoint >> 12 ) & UTF8_CONTINUATION_MASK ) ) );
-                                result.push_back(
-                                    static_cast<char>(
-                                        UTF8_CONTINUATION_BYTE | ( ( codePoint >> 6 ) & UTF8_CONTINUATION_MASK ) ) );
-                                result.push_back(
-                                    static_cast<char>(
-                                        UTF8_CONTINUATION_BYTE | ( codePoint & UTF8_CONTINUATION_MASK ) ) );
-                            }
-                            else
-                            {
-                                throw std::runtime_error{ "Invalid unicode code point" };
-                            }
-
+                            parseUnicodeEscape( result );
                             break;
-                        }
                         default:
-                            throw std::runtime_error{ std::string( "Invalid escape sequence: \\" ) + escaped };
+                            throw std::runtime_error{ std::string{ "Invalid escape sequence: \\" } + escaped };
                     }
                     ++m_pos;
                 }
@@ -547,22 +557,6 @@ namespace nfx::json
                 else
                 {
                     throw std::runtime_error{ "Expected ',' or '}' in object" };
-                }
-            }
-        }
-
-        void skipWhitespace()
-        {
-            while( m_pos < m_json.size() )
-            {
-                char c = m_json[m_pos];
-                if( c == ' ' || c == '\t' || c == '\n' || c == '\r' )
-                {
-                    ++m_pos;
-                }
-                else
-                {
-                    break;
                 }
             }
         }

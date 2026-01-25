@@ -352,7 +352,7 @@ namespace nfx::json
 #ifndef NDEBUG
         if( type() != Type::Object )
         {
-            throw std::runtime_error( "operator[]: Cannot use key access on non-Object type" );
+            throw std::runtime_error{ "operator[]: Cannot use key access on non-Object type" };
         }
 #endif
 
@@ -393,7 +393,7 @@ namespace nfx::json
 #ifndef NDEBUG
         if( type() != Type::Array )
         {
-            throw std::runtime_error( "operator[]: Cannot use index access on non-Array type" );
+            throw std::runtime_error{ "operator[]: Cannot use index access on non-Array type" };
         }
 #endif
 
