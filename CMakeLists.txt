@@ -58,7 +58,7 @@ enable_testing()
 #----------------------------------------------
 
 # --- Library build types ---
-option(NFX_JSON_BUILD_STATIC        "Build static library"              OFF)
+option(NFX_JSON_BUILD_STATIC        "Build static library"              ON )
 option(NFX_JSON_BUILD_SHARED        "Build shared library"              OFF)
 
 # --- Build components ---

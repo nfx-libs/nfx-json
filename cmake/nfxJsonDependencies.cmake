@@ -19,8 +19,8 @@ set(CMAKE_FIND_QUIETLY      ON     )
 #----------------------------------------------
 
 set(NFX_DEPS_NFX_STRINGUTILS_VERSION "0.5.0")
-set(NFX_DEPS_NFX_CONTAINERS_VERSION  "0.2.0")
-set(NFX_DEPS_NFX_RESOURCE_VERSION    "1.0.0")
+set(NFX_DEPS_NFX_CONTAINERS_VERSION  "0.3.0")
+set(NFX_DEPS_NFX_RESOURCE_VERSION    "1.1.0")
 
 #----------------------------------------------
 # FetchContent dependencies
