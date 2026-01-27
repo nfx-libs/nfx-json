@@ -25,6 +25,13 @@
 ### Security
 
 - NIL
+- 
+## [1.0.3] - 2026-01-27
+
+### Changed
+
+- Bump nfx-containers from 0.2.0 to 0.3.0
+- Bump nfx-resource from 1.0.0 to 1.1.0
 
 ## [1.0.2] - 2026-01-25
 
