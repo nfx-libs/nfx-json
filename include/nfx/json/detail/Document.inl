@@ -47,6 +47,16 @@ namespace nfx::json
     {
     }
 
+    inline Document::Document( int value ) noexcept
+        : m_data{ static_cast<int64_t>( value ) }
+    {
+    }
+
+    inline Document::Document( unsigned int value ) noexcept
+        : m_data{ static_cast<uint64_t>( value ) }
+    {
+    }
+
     inline Document::Document( int64_t value ) noexcept
         : m_data{ value }
     {
@@ -77,6 +87,12 @@ namespace nfx::json
     {
     }
 
+    template <size_t N>
+    inline Document::Document( const char ( &value )[N] )
+        : m_data{ std::string( value ) }
+    {
+    }
+
     inline Document::Document( std::nullptr_t ) noexcept
         : m_data{ nullptr }
     {
@@ -89,6 +105,44 @@ namespace nfx::json
 
     inline Document::Document( Object value )
         : m_data{ std::move( value ) }
+    {
+    }
+
+    template <typename T>
+    inline Document::Document(
+        T value,
+        std::enable_if_t<
+            std::is_same_v<T, long> && !std::is_same_v<long, int> && !std::is_same_v<long, int64_t>,
+            int> ) noexcept
+        : m_data{ static_cast<int64_t>( value ) }
+    {
+    }
+
+    template <typename T>
+    inline Document::Document(
+        T value,
+        std::enable_if_t<
+            std::is_same_v<T, unsigned long> && !std::is_same_v<unsigned long, unsigned int> &&
+                !std::is_same_v<unsigned long, uint64_t>,
+            int> ) noexcept
+        : m_data{ static_cast<uint64_t>( value ) }
+    {
+    }
+
+    template <typename T>
+    inline Document::Document(
+        T value, std::enable_if_t<std::is_same_v<T, long long> && !std::is_same_v<long long, int64_t>, int> ) noexcept
+        : m_data{ static_cast<int64_t>( value ) }
+    {
+    }
+
+    template <typename T>
+    inline Document::Document(
+        T value,
+        std::enable_if_t<
+            std::is_same_v<T, unsigned long long> && !std::is_same_v<unsigned long long, uint64_t>,
+            int> ) noexcept
+        : m_data{ static_cast<uint64_t>( value ) }
     {
     }
 
@@ -407,7 +461,7 @@ namespace nfx::json
 
     inline const Document& Document::operator[]( size_t index ) const
     {
-        thread_local const Document nullValue{ nullptr };
+        static const Document nullValue{ nullptr };
         if( type() != Type::Array )
         {
             return nullValue;

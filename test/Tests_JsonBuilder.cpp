@@ -955,6 +955,32 @@ namespace nfx::json::test
     // Document integration tests
     //=====================================================================
 
+    TEST_F( BuilderTest, WriteDocument_AsObjectProperty )
+    {
+        Builder builder;
+
+        // Create a Document
+        Document doc = Document::object();
+        doc.set( "nested", "value" );
+        doc.set( "number", 42 );
+
+        // Write it as a property
+        builder.writeStartObject();
+        builder.write( "data", doc );
+        builder.writeEndObject();
+
+        std::string json = builder.toString();
+
+        // Debug: print the generated JSON
+        std::cout << "Generated JSON: " << json << std::endl;
+
+        // Parse and verify
+        auto parsed = Document::fromString( json );
+        ASSERT_TRUE( parsed.has_value() ) << "Failed to parse: " << json;
+        EXPECT_EQ( parsed->get<std::string>( "data.nested" ), "value" );
+        EXPECT_EQ( parsed->get<int>( "data.number" ), 42 );
+    }
+
     TEST_F( BuilderTest, WriteDocument_AsArrayElement )
     {
         Builder builder;
@@ -974,6 +1000,9 @@ namespace nfx::json::test
 
         std::string json = builder.toString();
 
+        // Debug
+        std::cout << "Generated JSON: " << json << std::endl;
+
         // Parse and verify
         auto parsed = Document::fromString( json );
         ASSERT_TRUE( parsed.has_value() ) << "Failed to parse: " << json;
@@ -981,6 +1010,85 @@ namespace nfx::json::test
         EXPECT_EQ( parsed->size(), 2u );
         EXPECT_EQ( parsed->get<int>( "0.id" ), 1 );
         EXPECT_EQ( parsed->get<int>( "1.id" ), 2 );
+    }
+
+    TEST_F( BuilderTest, WriteDocument_ComplexNested )
+    {
+        Builder builder;
+
+        // Create nested document structure
+        Document user = Document::object();
+        user.set( "name", "Alice" );
+        user.set( "age", 30 );
+
+        Document address = Document::object();
+        address.set( "city", "Paris" );
+        address.set( "country", "France" );
+
+        // Build with Documents
+        builder.writeStartObject();
+        builder.write( "user", user );
+        builder.write( "address", address );
+        builder.write( "timestamp", "2026-01-31" );
+        builder.writeEndObject();
+
+        std::string json = builder.toString();
+
+        // Parse and verify
+        auto parsed = Document::fromString( json );
+        ASSERT_TRUE( parsed.has_value() );
+        EXPECT_EQ( parsed->get<std::string>( "user.name" ), "Alice" );
+        EXPECT_EQ( parsed->get<int>( "user.age" ), 30 );
+        EXPECT_EQ( parsed->get<std::string>( "address.city" ), "Paris" );
+        EXPECT_EQ( parsed->get<std::string>( "address.country" ), "France" );
+        EXPECT_EQ( parsed->get<std::string>( "timestamp" ), "2026-01-31" );
+    }
+
+    TEST_F( BuilderTest, WriteDocument_Array )
+    {
+        Builder builder;
+
+        // Create array document
+        Document arr = Document::array();
+        arr.push_back( Document{ 1 } );
+        arr.push_back( Document{ 2 } );
+        arr.push_back( Document{ 3 } );
+
+        // Write as property
+        builder.writeStartObject();
+        builder.write( "numbers", arr );
+        builder.writeEndObject();
+
+        std::string json = builder.toString();
+
+        // Parse and verify
+        auto parsed = Document::fromString( json );
+        ASSERT_TRUE( parsed.has_value() );
+        EXPECT_EQ( parsed->get<int>( "numbers.0" ), 1 );
+        EXPECT_EQ( parsed->get<int>( "numbers.1" ), 2 );
+        EXPECT_EQ( parsed->get<int>( "numbers.2" ), 3 );
+    }
+
+    TEST_F( BuilderTest, WriteDocument_Primitive )
+    {
+        Builder builder;
+
+        builder.writeStartObject();
+        builder.write( "str", Document{ "hello" } );
+        builder.write( "num", Document{ 42 } );
+        builder.write( "bool", Document{ true } );
+        builder.write( "null", Document{ nullptr } );
+        builder.writeEndObject();
+
+        std::string json = builder.toString();
+
+        // Parse and verify
+        auto parsed = Document::fromString( json );
+        ASSERT_TRUE( parsed.has_value() );
+        EXPECT_EQ( parsed->get<std::string>( "str" ), "hello" );
+        EXPECT_EQ( parsed->get<int>( "num" ), 42 );
+        EXPECT_EQ( parsed->get<bool>( "bool" ), true );
+        EXPECT_FALSE( parsed->get<int>( "null" ).has_value() ); // null returns nullopt
     }
 
     //=====================================================================
@@ -1114,6 +1222,22 @@ namespace nfx::json::test
 
         std::string json = builder.toString();
         EXPECT_EQ( json, "[[1,2],[3,4]]" );
+    }
+
+    TEST_F( BuilderTest, WriteArray_DocumentVector )
+    {
+        Builder builder;
+        std::vector<Document> docs;
+        docs.push_back( Document{ "hello" } );
+        docs.push_back( Document{ 42 } );
+        docs.push_back( Document{ true } );
+
+        builder.writeStartObject();
+        builder.writeArray( "mixed", docs );
+        builder.writeEndObject();
+
+        std::string json = builder.toString();
+        EXPECT_EQ( json, R"({"mixed":["hello",42,true]})" );
     }
 
     TEST_F( BuilderTest, WriteArray_DifferentContainerTypes )

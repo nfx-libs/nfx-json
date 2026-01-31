@@ -8,7 +8,9 @@
 - **Builder**: SIMD-optimized string escaping using SSE2 intrinsics
 - **Builder**: Support for pretty-printing with configurable indentation
 - **Builder**: Template helpers for writing STL containers as arrays
-- **Tests**: Unit test suite for Builder
+- **Document**: Constructors for `int`, `unsigned int`, and string literals for ergonomics
+- **Document**: SFINAE constructors for `long`, `unsigned long`, `long long`, `unsigned long long` (cross-platform compatibility)
+- **Tests**: Unit test suite for Builder (90+ test cases)
 - **Samples**: `Sample_JsonBuilder` demonstrating Builder API usage
 - **Parser**: SIMD-optimized whitespace skipping and string parsing using SSE2 intrinsics
 - **Parser**: Platform-independent `countTrailingZeros` helper function
@@ -28,7 +30,7 @@
 
 ### Fixed
 
-- NIL
+- **Document**: Replace `thread_local` with `static` in `operator[]` const for better portability
 
 ### Security
 

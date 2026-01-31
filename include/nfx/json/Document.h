@@ -124,6 +124,18 @@ namespace nfx::json
          * @brief Integer constructor
          * @param value The integer value
          */
+        inline Document( int value ) noexcept;
+
+        /**
+         * @brief Unsigned integer constructor
+         * @param value The unsigned integer value
+         */
+        inline Document( unsigned int value ) noexcept;
+
+        /**
+         * @brief 64-bit integer constructor
+         * @param value The 64-bit integer value
+         */
         inline Document( int64_t value ) noexcept;
 
         /**
@@ -157,6 +169,14 @@ namespace nfx::json
         inline explicit Document( const char* value );
 
         /**
+         * @brief String literal constructor (non-explicit for convenience)
+         * @tparam N Size of the string literal (including null terminator)
+         * @param value String literal
+         */
+        template <size_t N>
+        inline Document( const char ( &value )[N] );
+
+        /**
          * @brief nullptr constructor (creates null JSON value)
          */
         inline Document( std::nullptr_t ) noexcept;
@@ -172,6 +192,51 @@ namespace nfx::json
          * @param value The object value
          */
         inline explicit Document( Object value );
+
+        /**
+         * @brief Long integer constructor (SFINAE overload for platforms where long != int && long != int64_t)
+         * @param value The long integer value
+         */
+        template <typename T>
+        inline Document(
+            T value,
+            std::enable_if_t<
+                std::is_same_v<T, long> && !std::is_same_v<long, int> && !std::is_same_v<long, int64_t>,
+                int> = 0 ) noexcept;
+
+        /**
+         * @brief Unsigned long integer constructor (SFINAE overload for platforms where unsigned long != unsigned int
+         * && unsigned long != uint64_t)
+         * @param value The unsigned long integer value
+         */
+        template <typename T>
+        inline Document(
+            T value,
+            std::enable_if_t<
+                std::is_same_v<T, unsigned long> && !std::is_same_v<unsigned long, unsigned int> &&
+                    !std::is_same_v<unsigned long, uint64_t>,
+                int> = 0 ) noexcept;
+
+        /**
+         * @brief Long long integer constructor (SFINAE overload for platforms where long long != int64_t)
+         * @param value The long long integer value
+         */
+        template <typename T>
+        inline Document(
+            T value,
+            std::enable_if_t<std::is_same_v<T, long long> && !std::is_same_v<long long, int64_t>, int> = 0 ) noexcept;
+
+        /**
+         * @brief Unsigned long long integer constructor (SFINAE overload for platforms where unsigned long long !=
+         * uint64_t)
+         * @param value The unsigned long long integer value
+         */
+        template <typename T>
+        inline Document(
+            T value,
+            std::enable_if_t<
+                std::is_same_v<T, unsigned long long> && !std::is_same_v<unsigned long long, uint64_t>,
+                int> = 0 ) noexcept;
 
         /**
          * @brief Copy constructor
@@ -1624,8 +1689,6 @@ namespace nfx::json
         //----------------------------------------------
         // Private internal access
         //----------------------------------------------
-
-        friend class JsonWriter;
 
         /**
          * @brief Get direct const reference to root value
