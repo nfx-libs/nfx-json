@@ -14,6 +14,7 @@
 - **Samples**: `Sample_JsonBuilder` demonstrating Builder API usage
 - **Parser**: SIMD-optimized whitespace skipping and string parsing using SSE2 intrinsics
 - **Parser**: Platform-independent `countTrailingZeros` helper function
+- **Benchmarks**: Builder serialization benchmarks (compact and pretty-print variants)
 
 ### Changed
 

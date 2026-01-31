@@ -115,15 +115,15 @@ namespace nfx::json::benchmark
     }
 
     //----------------------------------------------
-    // Serialization benchmarks - Compact
+    // Serialization benchmarks - Document & Builder
     //----------------------------------------------
 
-    static void SerializeSmallObject_Compact( ::benchmark::State& state )
+    static void SerializeSmallObject( ::benchmark::State& state )
     {
-        Document doc = createSmallObject();
-
         for( auto _ : state )
         {
+            Document doc = createSmallObject();
+
             (void)_;
             auto json = doc.toString( 0 );
             ::benchmark::DoNotOptimize( json );
@@ -131,12 +131,29 @@ namespace nfx::json::benchmark
         state.SetItemsProcessed( state.iterations() );
     }
 
-    static void SerializeMediumObject_Compact( ::benchmark::State& state )
+    static void SerializeSmallObject_Builder( ::benchmark::State& state )
     {
-        Document doc = createMediumObject();
-
         for( auto _ : state )
         {
+            (void)_;
+            Builder builder{ { 0 } };
+            builder.writeStartObject()
+                .write( "name", "John Doe" )
+                .write( "age", 30 )
+                .write( "active", true )
+                .writeEndObject();
+            auto output = builder.toString();
+            ::benchmark::DoNotOptimize( output );
+        }
+        state.SetItemsProcessed( state.iterations() );
+    }
+
+    static void SerializeMediumObject( ::benchmark::State& state )
+    {
+        for( auto _ : state )
+        {
+            Document doc = createMediumObject();
+
             (void)_;
             auto json = doc.toString( 0 );
             ::benchmark::DoNotOptimize( json );
@@ -144,12 +161,41 @@ namespace nfx::json::benchmark
         state.SetItemsProcessed( state.iterations() );
     }
 
-    static void SerializeLargeObject_Compact( ::benchmark::State& state )
+    static void SerializeMediumObject_Builder( ::benchmark::State& state )
     {
-        Document doc = createLargeObject();
-
         for( auto _ : state )
         {
+            (void)_;
+            Builder builder{ { 0 } };
+            builder.writeStartObject()
+                .write( "name", "Jane Smith" )
+                .write( "age", 25 )
+                .write( "email", "jane.smith@example.com" )
+                .writeKey( "address" )
+                .writeStartObject()
+                .write( "street", "123 Main St" )
+                .write( "city", "Springfield" )
+                .write( "zip", "12345" )
+                .writeEndObject()
+                .writeKey( "preferences" )
+                .writeStartObject()
+                .write( "notifications", true )
+                .write( "newsletter", false )
+                .write( "theme", 1 )
+                .writeEndObject()
+                .writeEndObject();
+            auto output = builder.toString();
+            ::benchmark::DoNotOptimize( output );
+        }
+        state.SetItemsProcessed( state.iterations() );
+    }
+
+    static void SerializeLargeObject( ::benchmark::State& state )
+    {
+        for( auto _ : state )
+        {
+            Document doc = createLargeObject();
+
             (void)_;
             auto json = doc.toString( 0 );
             ::benchmark::DoNotOptimize( json );
@@ -157,12 +203,30 @@ namespace nfx::json::benchmark
         state.SetItemsProcessed( state.iterations() );
     }
 
-    static void SerializeSmallArray_Compact( ::benchmark::State& state )
+    static void SerializeLargeObject_Builder( ::benchmark::State& state )
     {
-        Document doc = createSmallArray();
-
         for( auto _ : state )
         {
+            (void)_;
+            Builder builder{ { 0 } };
+            builder.writeStartObject();
+            for( int i = 0; i < 100; ++i )
+            {
+                builder.write( "field" + std::to_string( i ), "value" + std::to_string( i ) );
+            }
+            builder.writeEndObject();
+            auto output = builder.toString();
+            ::benchmark::DoNotOptimize( output );
+        }
+        state.SetItemsProcessed( state.iterations() );
+    }
+
+    static void SerializeSmallArray( ::benchmark::State& state )
+    {
+        for( auto _ : state )
+        {
+            Document doc = createSmallArray();
+
             (void)_;
             auto json = doc.toString( 0 );
             ::benchmark::DoNotOptimize( json );
@@ -170,12 +234,30 @@ namespace nfx::json::benchmark
         state.SetItemsProcessed( state.iterations() );
     }
 
-    static void SerializeLargeArray_Compact( ::benchmark::State& state )
+    static void SerializeSmallArray_Builder( ::benchmark::State& state )
     {
-        Document doc = createLargeArray();
-
         for( auto _ : state )
         {
+            (void)_;
+            Builder builder{ { 0 } };
+            builder.writeStartArray();
+            for( int i = 0; i < 10; ++i )
+            {
+                builder.write( i );
+            }
+            builder.writeEndArray();
+            auto output = builder.toString();
+            ::benchmark::DoNotOptimize( output );
+        }
+        state.SetItemsProcessed( state.iterations() );
+    }
+
+    static void SerializeLargeArray( ::benchmark::State& state )
+    {
+        for( auto _ : state )
+        {
+            Document doc = createLargeArray();
+
             (void)_;
             auto json = doc.toString( 0 );
             ::benchmark::DoNotOptimize( json );
@@ -183,12 +265,30 @@ namespace nfx::json::benchmark
         state.SetItemsProcessed( state.iterations() );
     }
 
-    static void SerializeNested_Compact( ::benchmark::State& state )
+    static void SerializeLargeArray_Builder( ::benchmark::State& state )
     {
-        Document doc = createNestedDocument();
-
         for( auto _ : state )
         {
+            (void)_;
+            Builder builder{ { 0 } };
+            builder.writeStartArray();
+            for( int i = 0; i < 1000; ++i )
+            {
+                builder.write( i );
+            }
+            builder.writeEndArray();
+            auto output = builder.toString();
+            ::benchmark::DoNotOptimize( output );
+        }
+        state.SetItemsProcessed( state.iterations() );
+    }
+
+    static void SerializeNested( ::benchmark::State& state )
+    {
+        for( auto _ : state )
+        {
+            Document doc = createNestedDocument();
+
             (void)_;
             auto json = doc.toString( 0 );
             ::benchmark::DoNotOptimize( json );
@@ -196,15 +296,57 @@ namespace nfx::json::benchmark
         state.SetItemsProcessed( state.iterations() );
     }
 
-    static void SerializeStringHeavy_Compact( ::benchmark::State& state )
+    static void SerializeNested_Builder( ::benchmark::State& state )
     {
-        Document doc = createStringHeavyDocument();
-
         for( auto _ : state )
         {
             (void)_;
+            Builder builder{ { 0 } };
+            builder.writeStartObject()
+                .writeKey( "level1" )
+                .writeStartObject()
+                .write( "active", true )
+                .writeKey( "level2" )
+                .writeStartObject()
+                .write( "count", 42 )
+                .writeKey( "level3" )
+                .writeStartObject()
+                .write( "value", "deep" )
+                .writeEndObject()
+                .writeEndObject()
+                .writeEndObject()
+                .writeEndObject();
+            auto output = builder.toString();
+            ::benchmark::DoNotOptimize( output );
+        }
+        state.SetItemsProcessed( state.iterations() );
+    }
+
+    static void SerializeStringHeavy( ::benchmark::State& state )
+    {
+        for( auto _ : state )
+        {
+            Document doc = createStringHeavyDocument();
+
+            (void)_;
             auto json = doc.toString( 0 );
             ::benchmark::DoNotOptimize( json );
+        }
+        state.SetItemsProcessed( state.iterations() );
+    }
+
+    static void SerializeStringHeavy_Builder( ::benchmark::State& state )
+    {
+        for( auto _ : state )
+        {
+            (void)_;
+            Builder builder{ { 0 } };
+            builder.writeStartObject()
+                .write( "text", "Line 1\nLine 2\tTabbed\r\nLine 3 with \"quotes\"" )
+                .write( "code", "const char* str = \"hello\\nworld\";" )
+                .writeEndObject();
+            auto output = builder.toString();
+            ::benchmark::DoNotOptimize( output );
         }
         state.SetItemsProcessed( state.iterations() );
     }
@@ -215,23 +357,40 @@ namespace nfx::json::benchmark
 
     static void SerializeSmallObject_Pretty( ::benchmark::State& state )
     {
-        Document doc = createSmallObject();
-
         for( auto _ : state )
         {
+            Document doc = createSmallObject();
+
             (void)_;
             auto json = doc.toString( 2 );
             ::benchmark::DoNotOptimize( json );
+        }
+        state.SetItemsProcessed( state.iterations() );
+    }
+
+    static void SerializeSmallObject_Pretty_Builder( ::benchmark::State& state )
+    {
+        for( auto _ : state )
+        {
+            (void)_;
+            Builder builder{ { 2 } }; // 2-space indent
+            builder.writeStartObject()
+                .write( "name", "John Doe" )
+                .write( "age", 30 )
+                .write( "active", true )
+                .writeEndObject();
+            auto output = builder.toString();
+            ::benchmark::DoNotOptimize( output );
         }
         state.SetItemsProcessed( state.iterations() );
     }
 
     static void SerializeMediumObject_Pretty( ::benchmark::State& state )
     {
-        Document doc = createMediumObject();
-
         for( auto _ : state )
         {
+            Document doc = createMediumObject();
+
             (void)_;
             auto json = doc.toString( 2 );
             ::benchmark::DoNotOptimize( json );
@@ -239,15 +398,62 @@ namespace nfx::json::benchmark
         state.SetItemsProcessed( state.iterations() );
     }
 
-    static void SerializeLargeObject_Pretty( ::benchmark::State& state )
+    static void SerializeMediumObject_Pretty_Builder( ::benchmark::State& state )
     {
-        Document doc = createLargeObject();
-
         for( auto _ : state )
         {
+            Builder builder{ { 2 } }; // 2-space indent
+            builder.writeStartObject()
+                .write( "id", 12345 )
+                .write( "name", "Medium Test Object" )
+                .write( "description", "This is a medium-sized JSON object for benchmarking" )
+                .write( "active", true )
+                .write( "count", 42 )
+                .write( "ratio", 3.14159 )
+                .writeKey( "tags" )
+                .writeStartArray()
+                .write( "test" )
+                .write( "benchmark" )
+                .write( "json" )
+                .writeEndArray()
+                .writeKey( "metadata" )
+                .writeStartObject()
+                .write( "version", "1.0" )
+                .write( "author", "Benchmark Suite" )
+                .writeEndObject()
+                .writeEndObject();
+            auto output = builder.toString();
+            ::benchmark::DoNotOptimize( output );
+        }
+        state.SetItemsProcessed( state.iterations() );
+    }
+
+    static void SerializeLargeObject_Pretty( ::benchmark::State& state )
+    {
+        for( auto _ : state )
+        {
+            Document doc = createLargeObject();
+
             (void)_;
             auto json = doc.toString( 2 );
             ::benchmark::DoNotOptimize( json );
+        }
+        state.SetItemsProcessed( state.iterations() );
+    }
+
+    static void SerializeLargeObject_Pretty_Builder( ::benchmark::State& state )
+    {
+        for( auto _ : state )
+        {
+            Builder builder{ { 2 } }; // 2-space indent
+            builder.writeStartObject();
+            for( int i = 0; i < 100; ++i )
+            {
+                builder.write( "field" + std::to_string( i ), "value" + std::to_string( i ) );
+            }
+            builder.writeEndObject();
+            auto output = builder.toString();
+            ::benchmark::DoNotOptimize( output );
         }
         state.SetItemsProcessed( state.iterations() );
     }
@@ -295,24 +501,33 @@ namespace nfx::json::benchmark
     // Benchmark Registration
     //=====================================================================
 
-    // Compact serialization
-    BENCHMARK( SerializeSmallObject_Compact )->Unit( ::benchmark::kNanosecond );
-    BENCHMARK( SerializeMediumObject_Compact )->Unit( ::benchmark::kNanosecond );
-    BENCHMARK( SerializeLargeObject_Compact )->Unit( ::benchmark::kNanosecond );
-    BENCHMARK( SerializeSmallArray_Compact )->Unit( ::benchmark::kNanosecond );
-    BENCHMARK( SerializeLargeArray_Compact )->Unit( ::benchmark::kNanosecond );
-    BENCHMARK( SerializeNested_Compact )->Unit( ::benchmark::kNanosecond );
-    BENCHMARK( SerializeStringHeavy_Compact )->Unit( ::benchmark::kNanosecond );
+    // Serialization
+    BENCHMARK( SerializeSmallObject )->Unit( ::benchmark::kNanosecond );
+    BENCHMARK( SerializeSmallObject_Builder )->Unit( ::benchmark::kNanosecond );
+    BENCHMARK( SerializeMediumObject )->Unit( ::benchmark::kNanosecond );
+    BENCHMARK( SerializeMediumObject_Builder )->Unit( ::benchmark::kNanosecond );
+    BENCHMARK( SerializeLargeObject )->Unit( ::benchmark::kNanosecond );
+    BENCHMARK( SerializeLargeObject_Builder )->Unit( ::benchmark::kNanosecond );
+    BENCHMARK( SerializeSmallArray )->Unit( ::benchmark::kNanosecond );
+    BENCHMARK( SerializeSmallArray_Builder )->Unit( ::benchmark::kNanosecond );
+    BENCHMARK( SerializeLargeArray )->Unit( ::benchmark::kNanosecond );
+    BENCHMARK( SerializeLargeArray_Builder )->Unit( ::benchmark::kNanosecond );
+    BENCHMARK( SerializeNested )->Unit( ::benchmark::kNanosecond );
+    BENCHMARK( SerializeNested_Builder )->Unit( ::benchmark::kNanosecond );
+    BENCHMARK( SerializeStringHeavy )->Unit( ::benchmark::kNanosecond );
+    BENCHMARK( SerializeStringHeavy_Builder )->Unit( ::benchmark::kNanosecond );
 
     // Pretty printing
     BENCHMARK( SerializeSmallObject_Pretty )->Unit( ::benchmark::kNanosecond );
+    BENCHMARK( SerializeSmallObject_Pretty_Builder )->Unit( ::benchmark::kNanosecond );
     BENCHMARK( SerializeMediumObject_Pretty )->Unit( ::benchmark::kNanosecond );
+    BENCHMARK( SerializeMediumObject_Pretty_Builder )->Unit( ::benchmark::kNanosecond );
     BENCHMARK( SerializeLargeObject_Pretty )->Unit( ::benchmark::kNanosecond );
+    BENCHMARK( SerializeLargeObject_Pretty_Builder )->Unit( ::benchmark::kNanosecond );
 
     // Round-trip
     BENCHMARK( RoundTrip_SmallObject )->Unit( ::benchmark::kNanosecond );
     BENCHMARK( RoundTrip_LargeArray )->Unit( ::benchmark::kNanosecond );
-
 } // namespace nfx::json::benchmark
 
 BENCHMARK_MAIN();
