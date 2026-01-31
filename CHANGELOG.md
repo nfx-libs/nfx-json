@@ -4,6 +4,32 @@
 
 ### Added
 
+- NIL
+
+### Changed
+
+- NIL
+
+### Deprecated
+
+- NIL
+
+### Removed
+
+- NIL
+
+### Fixed
+
+- NIL
+
+### Security
+
+- NIL
+
+## [1.1.0] - 2026-01-31
+
+### Added
+
 - **Builder**: Fluent API for incremental JSON construction without DOM overhead
 - **Builder**: SIMD-optimized string escaping using SSE2 intrinsics
 - **Builder**: Support for pretty-printing with configurable indentation
@@ -20,6 +46,7 @@
 
 - **Document**: Replace internal `JsonWriter` with public `Builder` API
 - **Parser**: Renamed internal `JsonParser` to `Parser` (implementation detail)
+- Bump nfx-containers from 0.3.0 to 0.3.1
 
 ### Deprecated
 
@@ -36,7 +63,7 @@
 ### Security
 
 - NIL
-- 
+
 ## [1.0.3] - 2026-01-27
 
 ### Changed
