@@ -103,8 +103,8 @@ namespace nfx::json::test
         EXPECT_EQ( stringsArray[1].get<std::string>( "" ).value_or( "" ), "world" );
         EXPECT_EQ( stringsArray[2].get<std::string>( "" ).value_or( "" ), "test" );
 
-        // Out of bounds
-        EXPECT_FALSE( stringsArray[10].get<std::string>( "" ).has_value() );
+        // Out of bounds - use Document API to test bounds checking
+        EXPECT_FALSE( testDoc.get<std::string>( "/strings/10" ).has_value() );
     }
 
     TEST_F( JSONArrayTest, GetIntegerElements )
