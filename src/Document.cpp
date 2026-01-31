@@ -30,7 +30,7 @@
 #include "nfx/json/Document.h"
 
 #include "JsonWriter.h"
-#include "JsonParser.h"
+#include "Parser.h"
 
 #include <nfx/string/Utils.h>
 
@@ -170,7 +170,7 @@ namespace nfx::json
 
         try
         {
-            return JsonParser::parse( jsonStr );
+            return Parser::parse( jsonStr );
         }
         catch( const std::runtime_error& )
         {
@@ -199,7 +199,7 @@ namespace nfx::json
         try
         {
             std::string_view jsonStr( reinterpret_cast<const char*>( bytes.data() ), bytes.size() );
-            return JsonParser::parse( jsonStr );
+            return Parser::parse( jsonStr );
         }
         catch( const std::runtime_error& )
         {

@@ -22,6 +22,14 @@
  * SOFTWARE.
  */
 
+/**
+ * @file Parser.h
+ * @brief High-performance JSON parser for text-to-DOM conversion
+ * @details Parses JSON text into Document representation with full UTF-8 and Unicode support.
+ *          Handles UTF-8 BOM, UTF-16 surrogate pairs, and all standard JSON escape sequences.
+ *          Supports parsing integers, floating-point numbers, strings, arrays, and objects.
+ */
+
 #pragma once
 
 #include "nfx/json/Document.h"
@@ -34,12 +42,54 @@
 #include <string>
 #include <string_view>
 
+#if defined( __SSE2__ ) || defined( _M_X64 ) || ( defined( _M_IX86_FP ) && _M_IX86_FP >= 2 )
+#    include <emmintrin.h>
+#    define NFX_JSON_PARSER_USE_SIMD 1
+#else
+#    define NFX_JSON_PARSER_USE_SIMD 0
+#endif
+
+#if defined( _MSC_VER )
+#    include <intrin.h>
+#endif
+
 namespace nfx::json
 {
     namespace
     {
         // String parsing constants
         constexpr size_t STRING_INITIAL_CAPACITY = 64; // Typical JSON string length
+
+        /**
+         * @brief Count trailing zeros in an integer (platform-independent)
+         * @param value Input value to count trailing zeros
+         * @return Number of trailing zero bits
+         */
+        inline int countTrailingZeros( unsigned int value )
+        {
+#if defined( _MSC_VER )
+            // MSVC intrinsic
+            if( value == 0 )
+                return 32;
+            unsigned long index;
+            _BitScanForward( &index, value );
+            return static_cast<int>( index );
+#elif defined( __GNUC__ ) || defined( __clang__ )
+            // GCC/Clang built-in
+            return __builtin_ctz( value );
+#else
+            // Fallback implementation
+            if( value == 0 )
+                return 32;
+            int count = 0;
+            while( ( value & 1 ) == 0 )
+            {
+                value >>= 1;
+                ++count;
+            }
+            return count;
+#endif
+        }
 
         // UTF-8 BOM (Byte Order Mark) - https://www.unicode.org/faq/utf_bom.html
         // EF BB BF at start of file indicates UTF-8 encoding
@@ -75,7 +125,7 @@ namespace nfx::json
      * @brief High-performance JSON parser
      * @details Parses JSON text into Document representation
      */
-    class JsonParser
+    class Parser
     {
     public:
         /**
@@ -94,17 +144,27 @@ namespace nfx::json
                 json.remove_prefix( UTF8_BOM_LENGTH );
             }
 
-            JsonParser parser{ json };
+            Parser parser{ json };
             return parser.parseValue();
         }
 
     private:
-        explicit JsonParser( std::string_view json )
+        /**
+         * @brief Private constructor for internal use
+         * @param json JSON text to parse
+         */
+        explicit Parser( std::string_view json )
             : m_json{ json },
               m_pos{ 0 }
         {
         }
 
+        /**
+         * @brief Parse Unicode escape sequence (\uXXXX)
+         * @param result String to append decoded UTF-8 bytes to
+         * @throws std::runtime_error on invalid escape sequence or surrogate pair
+         * @details Handles UTF-16 surrogate pairs for characters beyond the Basic Multilingual Plane
+         */
         void parseUnicodeEscape( std::string& result )
         {
             // Unicode escape \uXXXX
@@ -205,8 +265,51 @@ namespace nfx::json
             }
         }
 
+        /**
+         * @brief Skip whitespace characters (space, tab, newline, carriage return)
+         */
         void skipWhitespace()
         {
+#if NFX_JSON_PARSER_USE_SIMD
+            // SIMD fast path: scan for non-whitespace characters
+            const __m128i space_vec = _mm_set1_epi8( ' ' );
+            const __m128i tab_vec = _mm_set1_epi8( '\t' );
+            const __m128i newline_vec = _mm_set1_epi8( '\n' );
+            const __m128i cr_vec = _mm_set1_epi8( '\r' );
+
+            while( m_pos + 16 <= m_json.size() )
+            {
+                // Load 16 bytes
+                __m128i chunk = _mm_loadu_si128( reinterpret_cast<const __m128i*>( m_json.data() + m_pos ) );
+
+                // Check if all bytes are whitespace
+                __m128i is_space = _mm_cmpeq_epi8( chunk, space_vec );
+                __m128i is_tab = _mm_cmpeq_epi8( chunk, tab_vec );
+                __m128i is_newline = _mm_cmpeq_epi8( chunk, newline_vec );
+                __m128i is_cr = _mm_cmpeq_epi8( chunk, cr_vec );
+
+                __m128i whitespace =
+                    _mm_or_si128( _mm_or_si128( is_space, is_tab ), _mm_or_si128( is_newline, is_cr ) );
+
+                int mask = _mm_movemask_epi8( whitespace );
+
+                if( mask == 0xFFFF )
+                {
+                    // All 16 bytes are whitespace - skip entire block
+                    m_pos += 16;
+                }
+                else
+                {
+                    // Found non-whitespace - count leading whitespace bytes
+                    int non_ws_mask = ~mask & 0xFFFF;
+                    int leading_ws = countTrailingZeros( static_cast<unsigned int>( non_ws_mask ) );
+                    m_pos += leading_ws;
+                    break;
+                }
+            }
+#endif
+
+            // Fallback path: byte-by-byte for remainder
             while( m_pos < m_json.size() )
             {
                 char c = m_json[m_pos];
@@ -225,7 +328,12 @@ namespace nfx::json
         // Core parsing methods
         //----------------------------------------------
 
-        Document parseValue()
+        /**
+         * @brief Parse any JSON value (determines type and dispatches to specific parser)
+         * @return Parsed Document containing the value
+         * @throws std::runtime_error on unexpected character or end of input
+         */
+        inline Document parseValue()
         {
             skipWhitespace();
 
@@ -266,7 +374,12 @@ namespace nfx::json
             }
         }
 
-        Document parseNull()
+        /**
+         * @brief Parse JSON null value
+         * @return Document containing null
+         * @throws std::runtime_error if input doesn't match "null"
+         */
+        inline Document parseNull()
         {
             if( m_json.substr( m_pos, 4 ) != "null" )
             {
@@ -276,7 +389,12 @@ namespace nfx::json
             return Document{ nullptr };
         }
 
-        Document parseBool()
+        /**
+         * @brief Parse JSON boolean value (true or false)
+         * @return Document containing boolean
+         * @throws std::runtime_error if input doesn't match "true" or "false"
+         */
+        inline Document parseBool()
         {
             if( m_json.substr( m_pos, 4 ) == "true" )
             {
@@ -294,7 +412,13 @@ namespace nfx::json
             }
         }
 
-        Document parseNumber()
+        /**
+         * @brief Parse JSON number (integer or floating-point)
+         * @return Document containing int64_t, uint64_t, or double
+         * @throws std::runtime_error on invalid number format
+         * @details Supports scientific notation and attempts int64_t before falling back to uint64_t or double
+         */
+        inline Document parseNumber()
         {
             size_t start = m_pos;
 
@@ -373,7 +497,12 @@ namespace nfx::json
             }
         }
 
-        Document parseString()
+        /**
+         * @brief Parse JSON string with escape sequence handling
+         * @return Document containing string
+         * @throws std::runtime_error on unterminated string or invalid escape sequence
+         */
+        inline Document parseString()
         {
             if( m_json[m_pos] != '"' )
             {
@@ -385,6 +514,41 @@ namespace nfx::json
             std::string result;
             result.reserve( STRING_INITIAL_CAPACITY );
 
+#if NFX_JSON_PARSER_USE_SIMD
+            // SIMD fast path: scan for special characters (quote and backslash)
+            const __m128i quote_vec = _mm_set1_epi8( '"' );
+            const __m128i backslash_vec = _mm_set1_epi8( '\\' );
+
+            while( m_pos + 16 <= m_json.size() )
+            {
+                // Load 16 bytes
+                __m128i chunk = _mm_loadu_si128( reinterpret_cast<const __m128i*>( m_json.data() + m_pos ) );
+
+                // Check for quote or backslash
+                __m128i cmp_quote = _mm_cmpeq_epi8( chunk, quote_vec );
+                __m128i cmp_backslash = _mm_cmpeq_epi8( chunk, backslash_vec );
+                __m128i special = _mm_or_si128( cmp_quote, cmp_backslash );
+
+                int mask = _mm_movemask_epi8( special );
+
+                if( mask == 0 )
+                {
+                    // No special characters in these 16 bytes - bulk copy
+                    result.append( m_json.data() + m_pos, 16 );
+                    m_pos += 16;
+                }
+                else
+                {
+                    // Found special character - copy bytes before it and break to slow path
+                    int special_pos = countTrailingZeros( static_cast<unsigned int>( mask ) );
+                    result.append( m_json.data() + m_pos, special_pos );
+                    m_pos += special_pos;
+                    break;
+                }
+            }
+#endif
+
+            // Fallback path: byte-by-byte processing for remainder and special characters
             while( m_pos < m_json.size() )
             {
                 char c = m_json[m_pos];
@@ -439,6 +603,12 @@ namespace nfx::json
                 }
                 else
                 {
+                    // JSON spec (RFC 8259) requires control characters (0x00-0x1F) to be escaped
+                    unsigned char uc = static_cast<unsigned char>( c );
+                    if( uc < 0x20 )
+                    {
+                        throw std::runtime_error{ "Unescaped control character in string" };
+                    }
                     result.push_back( c );
                     ++m_pos;
                 }
@@ -447,7 +617,12 @@ namespace nfx::json
             throw std::runtime_error{ "Unterminated string" };
         }
 
-        Document parseArray()
+        /**
+         * @brief Parse JSON array
+         * @return Document containing Array
+         * @throws std::runtime_error on malformed array syntax
+         */
+        inline Document parseArray()
         {
             if( m_json[m_pos] != '[' )
             {
@@ -492,7 +667,12 @@ namespace nfx::json
             }
         }
 
-        Document parseObject()
+        /**
+         * @brief Parse JSON object
+         * @return Document containing Object
+         * @throws std::runtime_error on malformed object syntax or non-string keys
+         */
+        inline Document parseObject()
         {
             if( m_json[m_pos] != '{' )
             {
@@ -563,10 +743,10 @@ namespace nfx::json
         }
 
         //----------------------------------------------
-        // Members
+        // Private members
         //----------------------------------------------
 
-        std::string_view m_json;
-        size_t m_pos;
+        std::string_view m_json; ///< JSON text being parsed
+        size_t m_pos;            ///< Current position in the JSON string
     };
 } // namespace nfx::json

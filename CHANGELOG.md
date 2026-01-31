@@ -4,11 +4,12 @@
 
 ### Added
 
-- NIL
+- **Parser**: SIMD-optimized whitespace skipping and string parsing using SSE2 intrinsics
+- **Parser**: Platform-independent `countTrailingZeros` helper function
 
 ### Changed
 
-- NIL
+- **Parser**: Renamed internal `JsonParser` to `Parser` (implementation detail)
 
 ### Deprecated
 
