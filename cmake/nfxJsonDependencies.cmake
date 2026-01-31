@@ -18,9 +18,10 @@ set(CMAKE_FIND_QUIETLY      ON     )
 # Dependency versions
 #----------------------------------------------
 
-set(NFX_DEPS_NFX_STRINGUTILS_VERSION "0.5.0")
-set(NFX_DEPS_NFX_CONTAINERS_VERSION  "0.3.0")
-set(NFX_DEPS_NFX_RESOURCE_VERSION    "1.1.0")
+set(NFX_JSON_DEPS_NFX_STRINGUTILS_VERSION "0.5.0")
+set(NFX_JSON_DEPS_NFX_CONTAINERS_VERSION  "0.3.1")
+set(NFX_JSON_DEPS_NFX_HASHING_VERSION     "0.1.2")
+set(NFX_JSON_DEPS_NFX_RESOURCE_VERSION    "1.1.0")
 
 #----------------------------------------------
 # FetchContent dependencies
@@ -36,7 +37,7 @@ endif()
 set(FETCHCONTENT_QUIET OFF)
 
 # --- nfx-stringutils ---
-find_package(nfx-stringutils ${NFX_DEPS_NFX_STRINGUTILS_VERSION} QUIET)
+find_package(nfx-stringutils ${NFX_JSON_DEPS_NFX_STRINGUTILS_VERSION} QUIET)
 if(NOT nfx-stringutils_FOUND)
     set(NFX_STRINGUTILS_BUILD_TESTS         OFF CACHE BOOL "")
     set(NFX_STRINGUTILS_BUILD_SAMPLES       OFF CACHE BOOL "")
@@ -51,7 +52,7 @@ if(NOT nfx-stringutils_FOUND)
     FetchContent_Declare(
         nfx-stringutils
             GIT_REPOSITORY https://github.com/nfx-libs/nfx-stringutils.git
-            GIT_TAG        ${NFX_DEPS_NFX_STRINGUTILS_VERSION}
+            GIT_TAG        ${NFX_JSON_DEPS_NFX_STRINGUTILS_VERSION}
             GIT_SHALLOW    TRUE
     )
     FetchContent_MakeAvailable(nfx-stringutils)
@@ -59,7 +60,7 @@ if(NOT nfx-stringutils_FOUND)
 endif()
 
 # --- nfx-containers ---
-find_package(nfx-containers ${NFX_DEPS_NFX_CONTAINERS_VERSION} QUIET)
+find_package(nfx-containers ${NFX_JSON_DEPS_NFX_CONTAINERS_VERSION} QUIET)
 if(NOT nfx-containers_FOUND)
     set(NFX_CONTAINERS_BUILD_TESTS         OFF CACHE BOOL "")
     set(NFX_CONTAINERS_BUILD_SAMPLES       OFF CACHE BOOL "")
@@ -74,14 +75,36 @@ if(NOT nfx-containers_FOUND)
     FetchContent_Declare(
         nfx-containers
             GIT_REPOSITORY https://github.com/nfx-libs/nfx-containers
-            GIT_TAG        ${NFX_DEPS_NFX_CONTAINERS_VERSION}
+            GIT_TAG        ${NFX_JSON_DEPS_NFX_CONTAINERS_VERSION}
             GIT_SHALLOW    TRUE
     )
     FetchContent_MakeAvailable(nfx-containers)
 endif()
 
+# --- nfx-hashing ---
+find_package(nfx-hashing ${NFX_JSON_DEPS_NFX_HASHING_VERSION} QUIET)
+if(NOT nfx-hashing_FOUND)
+    set(NFX_HASHING_BUILD_TESTS         OFF CACHE BOOL "")
+    set(NFX_HASHING_BUILD_SAMPLES       OFF CACHE BOOL "")
+    set(NFX_HASHING_BUILD_BENCHMARKS    OFF CACHE BOOL "")
+    set(NFX_HASHING_BUILD_DOCUMENTATION OFF CACHE BOOL "")
+    set(NFX_HASHING_INSTALL_PROJECT     OFF CACHE BOOL "")
+    set(NFX_HASHING_PACKAGE_SOURCE      OFF CACHE BOOL "")
+    set(NFX_HASHING_PACKAGE_ARCHIVE     OFF CACHE BOOL "")
+    set(NFX_HASHING_PACKAGE_DEB         OFF CACHE BOOL "")
+    set(NFX_HASHING_PACKAGE_RPM         OFF CACHE BOOL "")
+
+    FetchContent_Declare(
+        nfx-hashing
+            GIT_REPOSITORY https://github.com/nfx-libs/nfx-hashing.git
+            GIT_TAG        ${NFX_JSON_DEPS_NFX_HASHING_VERSION}
+            GIT_SHALLOW    TRUE
+    )
+    FetchContent_MakeAvailable(nfx-hashing)
+endif()
+
 # --- nfx-resource ---
-find_package(nfx-resource ${NFX_DEPS_NFX_RESOURCE_VERSION} QUIET)
+find_package(nfx-resource ${NFX_JSON_DEPS_NFX_RESOURCE_VERSION} QUIET)
 if(NOT nfx-resource_FOUND)
     set(NFX_RESOURCE_INSTALL_PROJECT OFF CACHE BOOL "")
     set(NFX_RESOURCE_PACKAGE_SOURCE  OFF CACHE BOOL "")
@@ -89,7 +112,7 @@ if(NOT nfx-resource_FOUND)
     FetchContent_Declare(
         nfx-resource
             GIT_REPOSITORY https://github.com/nfx-libs/nfx-resource.git
-            GIT_TAG        ${NFX_DEPS_NFX_RESOURCE_VERSION}
+            GIT_TAG        ${NFX_JSON_DEPS_NFX_RESOURCE_VERSION}
             GIT_SHALLOW    TRUE
     )
     FetchContent_MakeAvailable(nfx-resource)
