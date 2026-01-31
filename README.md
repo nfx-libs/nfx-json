@@ -20,6 +20,7 @@ nfx-json is a modern C++20 library for working with JSON documents. It provides 
 
 ### 📦 Core JSON Components
 
+- **Builder**: High-performance streaming JSON construction with fluent method chaining and SIMD optimizations
 - **Document**: Generic JSON document abstraction with type-safe value access and manipulation
 - **PathView**: Zero-copy document traversal with JSON Pointer and dot notation path iteration
 
@@ -197,6 +198,51 @@ cmake --build . --target nfx-json-documentation
 After building, open `./build/doc/html/index.html` in your web browser.
 
 ## Usage Examples
+
+### Builder - High-Performance JSON Construction
+
+```cpp
+#include <nfx/json/Builder.h>
+
+using namespace nfx::json;
+
+// Create JSON with compact output (default)
+Builder builder;
+builder.writeStartObject()
+    .write("name", "Alice Johnson")
+    .write("age", 30)
+    .write("email", "alice@example.com")
+    .write("active", true)
+    .writeKey("tags").writeStartArray()
+        .write("developer")
+        .write("admin")
+    .writeEndArray()
+    .writeEndObject();
+
+std::string json = builder.toString();
+// {"name":"Alice Johnson","age":30,"email":"alice@example.com","active":true,"tags":["developer","admin"]}
+
+// Pretty-print with 2-space indentation
+Builder prettyBuilder{{2}};  // Options: {indent, bufferSize}
+prettyBuilder.writeStartObject()
+    .write("id", 12345)
+    .write("username", "alice_dev")
+    .writeKey("profile").writeStartObject()
+        .write("firstName", "Alice")
+        .write("lastName", "Johnson")
+    .writeEndObject()
+    .writeEndObject();
+
+std::string prettyJson = prettyBuilder.toString();
+// {
+//   "id": 12345,
+//   "username": "alice_dev",
+//   "profile": {
+//     "firstName": "Alice",
+//     "lastName": "Johnson"
+//   }
+// }
+```
 
 ### Document - JSON Manipulation
 
@@ -539,4 +585,4 @@ All dependencies are automatically fetched via CMake FetchContent when building 
 
 ---
 
-_Updated on January 24, 2026_
+_Updated on January 31, 2026_
