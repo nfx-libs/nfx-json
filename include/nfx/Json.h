@@ -25,13 +25,14 @@
 /**
  * @file Json.h
  * @brief Main umbrella header for nfx-json library
- * @details Includes all JSON components: Document, Hash, SchemaGenerator, and SchemaValidator.
+ * @details Includes all JSON components: Builder, Document, SchemaGenerator, and SchemaValidator.
  *          This single header provides convenient access to the entire nfx::json namespace.
  *          For selective includes, use individual headers from nfx/json/ subdirectory.
  */
 
 #pragma once
 
+#include "json/Builder.h"
 #include "json/Document.h"
 #include "json/SchemaGenerator.h"
 #include "json/SchemaValidator.h"

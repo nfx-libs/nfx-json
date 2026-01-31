@@ -86,6 +86,7 @@ set(test_sources)
 list(APPEND test_sources
     Tests_JsonArrayIterator.cpp
     Tests_JsonArrays.cpp
+    Tests_JsonBuilder.cpp
     Tests_JsonDocument.cpp
     Tests_JsonDocumentAccess.cpp
     Tests_JsonFileLoading.cpp

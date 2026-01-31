@@ -917,6 +917,16 @@ namespace nfx::json
     }
 
     //----------------------------------------------
+    // Serialization
+    //----------------------------------------------
+
+    inline std::vector<uint8_t> Document::toBytes() const
+    {
+        std::string jsonStr = toString();
+        return std::vector<uint8_t>( jsonStr.begin(), jsonStr.end() );
+    }
+
+    //----------------------------------------------
     // Document::PathView class
     //----------------------------------------------
 

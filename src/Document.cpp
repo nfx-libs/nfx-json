@@ -29,7 +29,7 @@
 
 #include "nfx/json/Document.h"
 
-#include "JsonWriter.h"
+#include "nfx/json/Builder.h"
 #include "Parser.h"
 
 #include <nfx/string/Utils.h>
@@ -125,14 +125,9 @@ namespace nfx::json
 
     std::string Document::toString( int indent, size_t bufferSize ) const
     {
-        JsonWriter writer( indent, bufferSize > 0 ? bufferSize : JsonWriter::DEFAULT_BUFFER_SIZE );
-        return writer.write( *this );
-    }
-
-    std::vector<uint8_t> Document::toBytes() const
-    {
-        std::string jsonStr = toString();
-        return std::vector<uint8_t>( jsonStr.begin(), jsonStr.end() );
+        Builder builder{ { .indent = indent, .bufferSize = bufferSize > 0 ? bufferSize : 4096 } };
+        builder.write( *this );
+        return builder.toString();
     }
 
     //----------------------------------------------

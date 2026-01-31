@@ -1190,7 +1190,7 @@ namespace nfx::json
          * @brief Convert to JSON bytes
          * @return JSON byte representation
          */
-        [[nodiscard]] std::vector<uint8_t> toBytes() const;
+        [[nodiscard]] inline std::vector<uint8_t> toBytes() const;
 
         //----------------------------------------------
         // High-level API with path support

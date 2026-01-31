@@ -4,11 +4,18 @@
 
 ### Added
 
+- **Builder**: Fluent API for incremental JSON construction without DOM overhead
+- **Builder**: SIMD-optimized string escaping using SSE2 intrinsics
+- **Builder**: Support for pretty-printing with configurable indentation
+- **Builder**: Template helpers for writing STL containers as arrays
+- **Tests**: Unit test suite for Builder
+- **Samples**: `Sample_JsonBuilder` demonstrating Builder API usage
 - **Parser**: SIMD-optimized whitespace skipping and string parsing using SSE2 intrinsics
 - **Parser**: Platform-independent `countTrailingZeros` helper function
 
 ### Changed
 
+- **Document**: Replace internal `JsonWriter` with public `Builder` API
 - **Parser**: Renamed internal `JsonParser` to `Parser` (implementation detail)
 
 ### Deprecated
@@ -17,7 +24,7 @@
 
 ### Removed
 
-- NIL
+- **Internal**: `JsonWriter` class replaced by public `Builder` API
 
 ### Fixed
 

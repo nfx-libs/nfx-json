@@ -18,6 +18,7 @@ set(sample_sources "")
 
 list(APPEND sample_sources
     Sample_JsonArrayIterator.cpp
+    Sample_JsonBuilder.cpp
     Sample_JsonDocument.cpp
     Sample_JsonFileIO.cpp
     Sample_JsonMerge.cpp
