@@ -20,7 +20,7 @@
 
 ### Fixed
 
-- NIL
+- **Builder**: SIMD string escaping now continues processing after finding characters to escape instead of falling back to scalar code for the entire remaining string
 
 ### Security
 

@@ -632,20 +632,71 @@ namespace nfx::json
 
             if( mask == 0 )
             {
+                // Fast path: no escaping needed for this 16-byte chunk
                 i += 16;
             }
             else
             {
-                break;
+                // Found characters needing escape - process them individually
+                // but append clean prefix first
+                if( i > lastPos )
+                {
+                    m_buffer.append( str.data() + lastPos, i - lastPos );
+                    lastPos = i;
+                }
+
+                // Process each byte in this chunk that needs escaping
+                for( size_t j = 0; j < 16 && i + j < str.size(); ++j )
+                {
+                    if( mask & ( 1 << j ) )
+                    {
+                        // Append clean bytes before this one
+                        if( i + j > lastPos )
+                        {
+                            m_buffer.append( str.data() + lastPos, ( i + j ) - lastPos );
+                        }
+
+                        unsigned char c = static_cast<unsigned char>( str[i + j] );
+                        m_buffer.push_back( '\\' );
+                        switch( c )
+                        {
+                            case '"':
+                                m_buffer.push_back( '"' );
+                                break;
+                            case '\\':
+                                m_buffer.push_back( '\\' );
+                                break;
+                            case '\b':
+                                m_buffer.push_back( 'b' );
+                                break;
+                            case '\f':
+                                m_buffer.push_back( 'f' );
+                                break;
+                            case '\n':
+                                m_buffer.push_back( 'n' );
+                                break;
+                            case '\r':
+                                m_buffer.push_back( 'r' );
+                                break;
+                            case '\t':
+                                m_buffer.push_back( 't' );
+                                break;
+                            default:
+                                m_buffer.append( "u00" );
+                                m_buffer.push_back( hex[( c >> 4 ) & 0xF] );
+                                m_buffer.push_back( hex[c & 0xF] );
+                                break;
+                        }
+
+                        lastPos = i + j + 1;
+                    }
+                }
+
+                i += 16;
             }
         }
 
-        if( i > lastPos )
-        {
-            m_buffer.append( str.data() + lastPos, i - lastPos );
-            lastPos = i;
-        }
-
+        // Handle remaining bytes (< 16) with scalar code
         for( ; i < str.size(); ++i )
         {
             unsigned char c = static_cast<unsigned char>( str[i] );
