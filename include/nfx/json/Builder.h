@@ -531,6 +531,18 @@ namespace nfx::json
          */
         inline void writeDocument( const Document& doc );
 
+        /**
+         * @brief Write a Document array to the buffer
+         * @param arrayRef Reference to the array to write
+         */
+        inline void writeDocumentArray( const Array& array );
+
+        /**
+         * @brief Write a Document object to the buffer
+         * @param objectRef Reference to the object to write
+         */
+        inline void writeDocumentObject( const Object& object );
+
         std::string m_buffer;                                    ///< JSON output buffer
         int m_indent;                                            ///< Indentation level (0 = compact, >0 = pretty print)
         int m_currentIndent;                                     ///< Current indentation depth

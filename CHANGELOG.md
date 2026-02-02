@@ -8,7 +8,7 @@
 
 ### Changed
 
-- NIL
+- **Builder**: Refactored `writeDocument()` to extract long switch cases into separate helper methods (`writeDocumentArray()` and `writeDocumentObject()`)
 
 ### Deprecated
 

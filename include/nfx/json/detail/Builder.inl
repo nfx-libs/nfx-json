@@ -899,32 +899,7 @@ namespace nfx::json
                 // Write JSON array with recursive element serialization
                 if( auto arrayRef = doc.rootRef<Array>() )
                 {
-                    // Start array: write '[', push context, increase indent
-                    m_buffer.push_back( '[' );
-                    m_contextStack.push_back( { false, true, false } );
-                    if( m_indent > 0 )
-                    {
-                        m_currentIndent += m_indent;
-                    }
-
-                    // Serialize each array element recursively
-                    for( const auto& element : arrayRef->get() )
-                    {
-                        writeCommaIfNeeded();
-                        writeDocument( element );
-                    }
-
-                    // End array: decrease indent, write newline if needed, write ']'
-                    if( m_indent > 0 )
-                    {
-                        m_currentIndent -= m_indent;
-                        if( !m_contextStack.back().isEmpty )
-                        {
-                            writeNewlineAndIndent();
-                        }
-                    }
-                    m_buffer.push_back( ']' );
-                    m_contextStack.pop_back();
+                    writeDocumentArray( arrayRef->get() );
                 }
                 break;
 
@@ -932,44 +907,79 @@ namespace nfx::json
                 // Write JSON object with recursive key-value pair serialization
                 if( auto objectRef = doc.rootRef<Object>() )
                 {
-                    // Start object: write '{', push context, increase indent
-                    m_buffer.push_back( '{' );
-                    m_contextStack.push_back( { true, true, false } );
-                    if( m_indent > 0 )
-                    {
-                        m_currentIndent += m_indent;
-                    }
-
-                    // Serialize each key-value pair recursively
-                    for( const auto& [key, value] : objectRef->get() )
-                    {
-                        writeCommaIfNeeded();
-                        writeString( key );
-                        // Add space after colon in pretty-print mode
-                        if( m_indent > 0 )
-                        {
-                            m_buffer.append( ": " );
-                        }
-                        else
-                        {
-                            m_buffer.push_back( ':' );
-                        }
-                        writeDocument( value );
-                    }
-
-                    // End object: decrease indent, write newline if needed, write '}'
-                    if( m_indent > 0 )
-                    {
-                        m_currentIndent -= m_indent;
-                        if( !m_contextStack.back().isEmpty )
-                        {
-                            writeNewlineAndIndent();
-                        }
-                    }
-                    m_buffer.push_back( '}' );
-                    m_contextStack.pop_back();
+                    writeDocumentObject( objectRef->get() );
                 }
                 break;
         }
+    }
+
+    inline void Builder::writeDocumentArray( const Array& array )
+    {
+        // Start array: write '[', push context, increase indent
+        m_buffer.push_back( '[' );
+        m_contextStack.push_back( { false, true, false } );
+        if( m_indent > 0 )
+        {
+            m_currentIndent += m_indent;
+        }
+
+        // Serialize each array element recursively
+        for( const auto& element : array )
+        {
+            writeCommaIfNeeded();
+            writeDocument( element );
+        }
+
+        // End array: decrease indent, write newline if needed, write ']'
+        if( m_indent > 0 )
+        {
+            m_currentIndent -= m_indent;
+            if( !m_contextStack.back().isEmpty )
+            {
+                writeNewlineAndIndent();
+            }
+        }
+        m_buffer.push_back( ']' );
+        m_contextStack.pop_back();
+    }
+
+    inline void Builder::writeDocumentObject( const Object& object )
+    {
+        // Start object: write '{', push context, increase indent
+        m_buffer.push_back( '{' );
+        m_contextStack.push_back( { true, true, false } );
+        if( m_indent > 0 )
+        {
+            m_currentIndent += m_indent;
+        }
+
+        // Serialize each key-value pair recursively
+        for( const auto& [key, value] : object )
+        {
+            writeCommaIfNeeded();
+            writeString( key );
+            // Add space after colon in pretty-print mode
+            if( m_indent > 0 )
+            {
+                m_buffer.append( ": " );
+            }
+            else
+            {
+                m_buffer.push_back( ':' );
+            }
+            writeDocument( value );
+        }
+
+        // End object: decrease indent, write newline if needed, write '}'
+        if( m_indent > 0 )
+        {
+            m_currentIndent -= m_indent;
+            if( !m_contextStack.back().isEmpty )
+            {
+                writeNewlineAndIndent();
+            }
+        }
+        m_buffer.push_back( '}' );
+        m_contextStack.pop_back();
     }
 } // namespace nfx::json
