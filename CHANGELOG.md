@@ -8,7 +8,10 @@
 
 ### Changed
 
-- **Builder**: Refactored `writeDocument()` to extract long switch cases into separate helper methods (`writeDocumentArray()` and `writeDocumentObject()`)
+- **Builder**: Refactored `writeDocument()` to extract long switch cases into separate helper methods `writeDocumentArray()` and `writeDocumentObject()`
+- **Parser**: Refactored `parseUnicodeEscape()` by extracting surrogate pair handling into `parseSurrogatePair()` and UTF-8 encoding into `encodeUtf8()`
+- **Parser**: Refactored `parseString()` by extracting escape sequence handling into `parseEscapeSequence()`
+- **Parser**: Added `SIMD_CHUNK_SIZE` constant to replace magic number 16 in SIMD code paths
 
 ### Deprecated
 

@@ -59,6 +59,7 @@ namespace nfx::json
     {
         // String parsing constants
         constexpr size_t STRING_INITIAL_CAPACITY = 64; // Typical JSON string length
+        constexpr size_t SIMD_CHUNK_SIZE = 16;         // SSE2 processes 16 bytes at a time
 
         /**
          * @brief Count trailing zeros in an integer (platform-independent)
@@ -160,72 +161,54 @@ namespace nfx::json
         }
 
         /**
-         * @brief Parse Unicode escape sequence (\uXXXX)
-         * @param result String to append decoded UTF-8 bytes to
-         * @throws std::runtime_error on invalid escape sequence or surrogate pair
-         * @details Handles UTF-16 surrogate pairs for characters beyond the Basic Multilingual Plane
+         * @brief Parse UTF-16 surrogate pair and return combined code point
+         * @param highSurrogate The high surrogate value (0xD800-0xDBFF)
+         * @return Combined Unicode code point
+         * @throws std::runtime_error on invalid surrogate pair
          */
-        void parseUnicodeEscape( std::string& result )
+        uint32_t parseSurrogatePair( uint32_t highSurrogate )
         {
-            // Unicode escape \uXXXX
-            if( m_pos + 4 >= m_json.size() )
+            // High surrogate - need to get low surrogate
+            m_pos += 4; // Skip the 4 hex digits of high surrogate
+
+            // Check for \uXXXX pattern
+            if( m_pos + 6 >= m_json.size() || m_json[m_pos + 1] != '\\' || m_json[m_pos + 2] != 'u' )
             {
-                throw std::runtime_error{ "Invalid unicode escape" };
+                throw std::runtime_error{ "Invalid surrogate pair: missing low surrogate" };
             }
 
-            // Parse hex code point directly without string allocation
-            const char* start = m_json.data() + m_pos + 1;
-            unsigned int codePoint = 0;
-            auto [ptr, ec] = std::from_chars( start, start + 4, codePoint, 16 );
-            if( ec != std::errc{} || ptr != start + 4 )
+            // Parse low surrogate directly without string allocation
+            const char* lowStart = m_json.data() + m_pos + 3;
+            unsigned int lowSurrogate = 0;
+            auto [lowPtr, lowEc] = std::from_chars( lowStart, lowStart + 4, lowSurrogate, 16 );
+            if( lowEc != std::errc{} || lowPtr != lowStart + 4 )
             {
-                throw std::runtime_error{ "Invalid unicode escape" };
+                throw std::runtime_error{ "Invalid unicode escape in low surrogate" };
             }
 
-            // Check for UTF-16 surrogate pairs (for characters beyond BMP)
-            if( codePoint >= UTF16_HIGH_SURROGATE_START && codePoint <= UTF16_HIGH_SURROGATE_END )
+            // Validate low surrogate range
+            if( lowSurrogate < UTF16_LOW_SURROGATE_START || lowSurrogate > UTF16_LOW_SURROGATE_END )
             {
-                // High surrogate - need to get low surrogate
-                m_pos += 4; // Skip the 4 hex digits
-
-                // Check for \uXXXX pattern
-                if( m_pos + 6 >= m_json.size() || m_json[m_pos + 1] != '\\' || m_json[m_pos + 2] != 'u' )
-                {
-                    throw std::runtime_error{ "Invalid surrogate pair: missing low surrogate" };
-                }
-
-                // Parse low surrogate directly without string allocation
-                const char* lowStart = m_json.data() + m_pos + 3;
-                unsigned int lowSurrogate = 0;
-                auto [lowPtr, lowEc] = std::from_chars( lowStart, lowStart + 4, lowSurrogate, 16 );
-                if( lowEc != std::errc{} || lowPtr != lowStart + 4 )
-                {
-                    throw std::runtime_error{ "Invalid unicode escape in low surrogate" };
-                }
-
-                // Validate low surrogate range
-                if( lowSurrogate < UTF16_LOW_SURROGATE_START || lowSurrogate > UTF16_LOW_SURROGATE_END )
-                {
-                    throw std::runtime_error{ "Invalid low surrogate value" };
-                }
-
-                // Combine surrogates to get actual code point
-                // Formula: (high - 0xD800) * 0x400 + (low - 0xDC00) + 0x10000
-                codePoint = ( ( codePoint - UTF16_HIGH_SURROGATE_START ) << 10 ) +
-                            ( lowSurrogate - UTF16_LOW_SURROGATE_START ) + UTF16_SURROGATE_OFFSET;
-
-                m_pos += 6; // Skip \uXXXX of low surrogate
-            }
-            else if( codePoint >= UTF16_LOW_SURROGATE_START && codePoint <= UTF16_LOW_SURROGATE_END )
-            {
-                // Low surrogate without high surrogate
-                throw std::runtime_error{ "Invalid surrogate pair: unexpected low surrogate" };
-            }
-            else
-            {
-                m_pos += 4; // Skip the 4 hex digits
+                throw std::runtime_error{ "Invalid low surrogate value" };
             }
 
+            // Combine surrogates to get actual code point
+            // Formula: (high - 0xD800) * 0x400 + (low - 0xDC00) + 0x10000
+            uint32_t codePoint = ( ( highSurrogate - UTF16_HIGH_SURROGATE_START ) << 10 ) +
+                                 ( lowSurrogate - UTF16_LOW_SURROGATE_START ) + UTF16_SURROGATE_OFFSET;
+
+            m_pos += 6; // Skip \uXXXX of low surrogate
+            return codePoint;
+        }
+
+        /**
+         * @brief Encode Unicode code point as UTF-8 and append to string
+         * @param result String to append UTF-8 bytes to
+         * @param codePoint Unicode code point to encode
+         * @throws std::runtime_error on invalid code point
+         */
+        void encodeUtf8( std::string& result, uint32_t codePoint )
+        {
             // UTF-8 encoding of the code point
             if( codePoint < UTF8_1BYTE_MAX )
             {
@@ -266,6 +249,98 @@ namespace nfx::json
         }
 
         /**
+         * @brief Parse Unicode escape sequence (\uXXXX)
+         * @param result String to append decoded UTF-8 bytes to
+         * @throws std::runtime_error on invalid escape sequence or surrogate pair
+         * @details Handles UTF-16 surrogate pairs for characters beyond the Basic Multilingual Plane
+         */
+        void parseUnicodeEscape( std::string& result )
+        {
+            // Unicode escape \uXXXX
+            if( m_pos + 4 >= m_json.size() )
+            {
+                throw std::runtime_error{ "Invalid unicode escape" };
+            }
+
+            // Parse hex code point directly without string allocation
+            const char* start = m_json.data() + m_pos + 1;
+            unsigned int codePoint = 0;
+            auto [ptr, ec] = std::from_chars( start, start + 4, codePoint, 16 );
+            if( ec != std::errc{} || ptr != start + 4 )
+            {
+                throw std::runtime_error{ "Invalid unicode escape" };
+            }
+
+            // Check for UTF-16 surrogate pairs (for characters beyond BMP)
+            if( codePoint >= UTF16_HIGH_SURROGATE_START && codePoint <= UTF16_HIGH_SURROGATE_END )
+            {
+                // Parse surrogate pair and get combined code point
+                codePoint = parseSurrogatePair( codePoint );
+            }
+            else if( codePoint >= UTF16_LOW_SURROGATE_START && codePoint <= UTF16_LOW_SURROGATE_END )
+            {
+                // Low surrogate without high surrogate
+                throw std::runtime_error{ "Invalid surrogate pair: unexpected low surrogate" };
+            }
+            else
+            {
+                m_pos += 4; // Skip the 4 hex digits
+            }
+
+            // Encode code point as UTF-8
+            encodeUtf8( result, codePoint );
+        }
+
+        /**
+         * @brief Process escape sequence in JSON string
+         * @param result String to append unescaped character to
+         * @throws std::runtime_error on invalid escape sequence
+         * @note m_pos should be at the character after backslash; will be incremented after processing
+         */
+        void parseEscapeSequence( std::string& result )
+        {
+            if( m_pos >= m_json.size() )
+            {
+                throw std::runtime_error{ "Unexpected end in string escape" };
+            }
+
+            char escaped = m_json[m_pos];
+            switch( escaped )
+            {
+                case '"':
+                    result.push_back( '"' );
+                    break;
+                case '\\':
+                    result.push_back( '\\' );
+                    break;
+                case '/':
+                    result.push_back( '/' );
+                    break;
+                case 'b':
+                    result.push_back( '\b' );
+                    break;
+                case 'f':
+                    result.push_back( '\f' );
+                    break;
+                case 'n':
+                    result.push_back( '\n' );
+                    break;
+                case 'r':
+                    result.push_back( '\r' );
+                    break;
+                case 't':
+                    result.push_back( '\t' );
+                    break;
+                case 'u':
+                    parseUnicodeEscape( result );
+                    break;
+                default:
+                    throw std::runtime_error{ std::string{ "Invalid escape sequence: \\" } + escaped };
+            }
+            ++m_pos;
+        }
+
+        /**
          * @brief Skip whitespace characters (space, tab, newline, carriage return)
          */
         void skipWhitespace()
@@ -277,7 +352,7 @@ namespace nfx::json
             const __m128i newline_vec = _mm_set1_epi8( '\n' );
             const __m128i cr_vec = _mm_set1_epi8( '\r' );
 
-            while( m_pos + 16 <= m_json.size() )
+            while( m_pos + SIMD_CHUNK_SIZE <= m_json.size() )
             {
                 // Load 16 bytes
                 __m128i chunk = _mm_loadu_si128( reinterpret_cast<const __m128i*>( m_json.data() + m_pos ) );
@@ -296,7 +371,7 @@ namespace nfx::json
                 if( mask == 0xFFFF )
                 {
                     // All 16 bytes are whitespace - skip entire block
-                    m_pos += 16;
+                    m_pos += SIMD_CHUNK_SIZE;
                 }
                 else
                 {
@@ -308,7 +383,6 @@ namespace nfx::json
                 }
             }
 #endif
-
             // Fallback path: byte-by-byte for remainder
             while( m_pos < m_json.size() )
             {
@@ -519,7 +593,7 @@ namespace nfx::json
             const __m128i quote_vec = _mm_set1_epi8( '"' );
             const __m128i backslash_vec = _mm_set1_epi8( '\\' );
 
-            while( m_pos + 16 <= m_json.size() )
+            while( m_pos + SIMD_CHUNK_SIZE <= m_json.size() )
             {
                 // Load 16 bytes
                 __m128i chunk = _mm_loadu_si128( reinterpret_cast<const __m128i*>( m_json.data() + m_pos ) );
@@ -534,8 +608,8 @@ namespace nfx::json
                 if( mask == 0 )
                 {
                     // No special characters in these 16 bytes - bulk copy
-                    result.append( m_json.data() + m_pos, 16 );
-                    m_pos += 16;
+                    result.append( m_json.data() + m_pos, SIMD_CHUNK_SIZE );
+                    m_pos += SIMD_CHUNK_SIZE;
                 }
                 else
                 {
@@ -547,7 +621,6 @@ namespace nfx::json
                 }
             }
 #endif
-
             // Fallback path: byte-by-byte processing for remainder and special characters
             while( m_pos < m_json.size() )
             {
@@ -561,45 +634,7 @@ namespace nfx::json
                 else if( c == '\\' )
                 {
                     ++m_pos;
-                    if( m_pos >= m_json.size() )
-                    {
-                        throw std::runtime_error{ "Unexpected end in string escape" };
-                    }
-
-                    char escaped = m_json[m_pos];
-                    switch( escaped )
-                    {
-                        case '"':
-                            result.push_back( '"' );
-                            break;
-                        case '\\':
-                            result.push_back( '\\' );
-                            break;
-                        case '/':
-                            result.push_back( '/' );
-                            break;
-                        case 'b':
-                            result.push_back( '\b' );
-                            break;
-                        case 'f':
-                            result.push_back( '\f' );
-                            break;
-                        case 'n':
-                            result.push_back( '\n' );
-                            break;
-                        case 'r':
-                            result.push_back( '\r' );
-                            break;
-                        case 't':
-                            result.push_back( '\t' );
-                            break;
-                        case 'u':
-                            parseUnicodeEscape( result );
-                            break;
-                        default:
-                            throw std::runtime_error{ std::string{ "Invalid escape sequence: \\" } + escaped };
-                    }
-                    ++m_pos;
+                    parseEscapeSequence( result );
                 }
                 else
                 {
