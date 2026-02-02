@@ -8,10 +8,7 @@
 
 ### Changed
 
-- **Builder**: Refactored `writeDocument()` to extract long switch cases into separate helper methods `writeDocumentArray()` and `writeDocumentObject()`
-- **Parser**: Refactored `parseUnicodeEscape()` by extracting surrogate pair handling into `parseSurrogatePair()` and UTF-8 encoding into `encodeUtf8()`
-- **Parser**: Refactored `parseString()` by extracting escape sequence handling into `parseEscapeSequence()`
-- **Parser**: Added `SIMD_CHUNK_SIZE` constant to replace magic number 16 in SIMD code paths
+- NIL
 
 ### Deprecated
 
@@ -23,11 +20,25 @@
 
 ### Fixed
 
-- **Builder**: SIMD string escaping now continues processing after finding characters to escape instead of falling back to scalar code for the entire remaining string
+- NIL
 
 ### Security
 
 - NIL
+
+## [1.1.1] - 2026-02-02
+
+### Changed
+
+- **Builder**: Refactored `writeDocument()` to extract long switch cases into separate helper methods `writeDocumentArray()` and `writeDocumentObject()`
+- **Parser**:
+  - Refactored `parseUnicodeEscape()` by extracting surrogate pair handling into `parseSurrogatePair()` and UTF-8 encoding into `encodeUtf8()`
+  - Refactored `parseString()` by extracting escape sequence handling into `parseEscapeSequence()`
+  - Added `SIMD_CHUNK_SIZE` constant to replace magic number 16 in SIMD code paths
+
+### Fixed
+
+- **Builder**: SIMD string escaping now continues processing after finding characters to escape instead of falling back to scalar code for the entire remaining string
 
 ## [1.1.0] - 2026-01-31
 
