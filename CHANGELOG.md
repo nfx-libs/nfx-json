@@ -8,7 +8,7 @@
 
 ### Changed
 
-- Bump nfx-containers from 0.3.1 to 0.3.2
+- NIL
 
 ### Deprecated
 
@@ -25,6 +25,12 @@
 ### Security
 
 - NIL
+
+## [1.1.2] - 2026-02-03
+
+### Changed
+
+- Bump nfx-containers from 0.3.1 to 0.3.2
 
 ## [1.1.1] - 2026-02-02
 
