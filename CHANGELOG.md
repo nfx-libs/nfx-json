@@ -8,7 +8,7 @@
 
 ### Changed
 
-- NIL
+- Bump nfx-containers from 0.3.1 to 0.3.2
 
 ### Deprecated
 
