@@ -120,38 +120,38 @@
 
 | Operation                         | Linux Clang | Windows MinGW GCC | Windows MSVC |
 | --------------------------------- | ----------: | ----------------: | -----------: |
-| **SerializeSmallObject**          |      339 ns |            498 ns |       487 ns |
-| **SerializeSmallObject_Builder**  |      125 ns |            180 ns |       157 ns |
-| **SerializeMediumObject**         |     1170 ns |           1715 ns |      1842 ns |
-| **SerializeMediumObject_Builder** |      424 ns |            617 ns |       547 ns |
-| **SerializeLargeObject**          |    47677 ns |          72100 ns |     74707 ns |
-| **SerializeLargeObject_Builder**  |     4890 ns |           5075 ns |      7267 ns |
-| **SerializeSmallArray**           |      581 ns |           1211 ns |      1406 ns |
-| **SerializeSmallArray_Builder**   |     94.0 ns |           77.8 ns |       160 ns |
-| **SerializeLargeArray**           |    59109 ns |         109149 ns |     92237 ns |
-| **SerializeLargeArray_Builder**   |     7994 ns |           5653 ns |     12905 ns |
-| **SerializeNested**               |      391 ns |            653 ns |       683 ns |
-| **SerializeNested_Builder**       |      230 ns |            328 ns |       294 ns |
-| **SerializeStringHeavy**          |      922 ns |           1391 ns |      1568 ns |
-| **SerializeStringHeavy_Builder**  |      232 ns |            312 ns |       290 ns |
+| **SerializeSmallObject**          |      427 ns |            602 ns |       574 ns |
+| **SerializeSmallObject_Builder**  |     78.2 ns |            121 ns |       119 ns |
+| **SerializeMediumObject**         |     1123 ns |           1832 ns |      1835 ns |
+| **SerializeMediumObject_Builder** |      264 ns |            390 ns |       359 ns |
+| **SerializeLargeObject**          |    50043 ns |          72044 ns |     64755 ns |
+| **SerializeLargeObject_Builder**  |     3851 ns |           5389 ns |      6820 ns |
+| **SerializeSmallArray**           |      700 ns |           1362 ns |      1419 ns |
+| **SerializeSmallArray_Builder**   |     40.6 ns |           62.3 ns |       112 ns |
+| **SerializeLargeArray**           |    60191 ns |         118401 ns |    103034 ns |
+| **SerializeLargeArray_Builder**   |     3572 ns |           3606 ns |      9602 ns |
+| **SerializeNested**               |      382 ns |            741 ns |       767 ns |
+| **SerializeNested_Builder**       |      137 ns |            206 ns |       180 ns |
+| **SerializeStringHeavy**          |      892 ns |           1482 ns |      1535 ns |
+| **SerializeStringHeavy_Builder**  |      131 ns |            198 ns |       181 ns |
 
 ### Write to String (Pretty Print, indent=2)
 
 | Operation                                | Linux Clang | Windows MinGW GCC | Windows MSVC |
 | ---------------------------------------- | ----------: | ----------------: | -----------: |
-| **SerializeSmallObject_Pretty**          |      370 ns |            531 ns |       529 ns |
-| **SerializeSmallObject_Pretty_Builder**  |      144 ns |            208 ns |       229 ns |
-| **SerializeMediumObject_Pretty**         |     1238 ns |           1780 ns |      1905 ns |
-| **SerializeMediumObject_Pretty_Builder** |      559 ns |            875 ns |       776 ns |
-| **SerializeLargeObject_Pretty**          |    48449 ns |          69772 ns |     74888 ns |
-| **SerializeLargeObject_Pretty_Builder**  |     5405 ns |           5751 ns |      7459 ns |
+| **SerializeSmallObject_Pretty**          |      380 ns |            596 ns |       586 ns |
+| **SerializeSmallObject_Pretty_Builder**  |     84.7 ns |            137 ns |       134 ns |
+| **SerializeMediumObject_Pretty**         |     1215 ns |           1816 ns |      1883 ns |
+| **SerializeMediumObject_Pretty_Builder** |      376 ns |            627 ns |       531 ns |
+| **SerializeLargeObject_Pretty**          |    54424 ns |          73290 ns |     74986 ns |
+| **SerializeLargeObject_Pretty_Builder**  |     4090 ns |           6043 ns |     10254 ns |
 
 ### Round-Trip (Parse + Serialize)
 
 | Operation            | Linux Clang | Windows MinGW GCC | Windows MSVC |
 | -------------------- | ----------: | ----------------: | -----------: |
-| **Small Object**     |      354 ns |            556 ns |       599 ns |
-| **Large Array (1K)** |    31474 ns |          36911 ns |     44171 ns |
+| **Small Object**     |      366 ns |            647 ns |      1004 ns |
+| **Large Array (1K)** |    27742 ns |          37830 ns |     51618 ns |
 
 ## Unique Items
 
@@ -176,4 +176,4 @@
 
 ---
 
-_Updated on January 31, 2026_
+_Updated on February 04, 2026_
