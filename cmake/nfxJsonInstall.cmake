@@ -46,6 +46,10 @@ if(install_targets)
         list(APPEND all_install_targets nfx-containers)
     endif()
 
+    if(TARGET nfx-stringbuilder-static AND NOT nfx-stringbuilder_FOUND)
+        list(APPEND all_install_targets nfx-stringbuilder-static)
+    endif()
+
     install(
         TARGETS ${all_install_targets}
         EXPORT nfx-json-targets

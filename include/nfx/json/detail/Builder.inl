@@ -27,6 +27,8 @@
  * @brief Inline Implementation of Builder class
  */
 
+#include <cstring>
+
 #if defined( __SSE2__ ) || defined( _M_X64 ) || ( defined( _M_IX86_FP ) && _M_IX86_FP >= 2 )
 #    include <emmintrin.h>
 #    define NFX_JSON_BUILDER_USE_SIMD 1
@@ -46,7 +48,7 @@ namespace nfx::json
     inline Builder& Builder::writeStartObject()
     {
         writeCommaIfNeeded();
-        m_buffer.push_back( '{' );
+        m_buffer.append( '{' );
         m_contextStack.push_back( { true, true, false } );
         if( m_indent > 0 )
         {
@@ -72,14 +74,14 @@ namespace nfx::json
         }
 
         m_contextStack.pop_back();
-        m_buffer.push_back( '}' );
+        m_buffer.append( '}' );
         return *this;
     }
 
     inline Builder& Builder::writeStartArray()
     {
         writeCommaIfNeeded();
-        m_buffer.push_back( '[' );
+        m_buffer.append( '[' );
         m_contextStack.push_back( { false, true, false } );
         if( m_indent > 0 )
         {
@@ -105,7 +107,7 @@ namespace nfx::json
         }
 
         m_contextStack.pop_back();
-        m_buffer.push_back( ']' );
+        m_buffer.append( ']' );
         return *this;
     }
 
@@ -123,7 +125,7 @@ namespace nfx::json
         }
         else
         {
-            m_buffer.push_back( ':' );
+            m_buffer.append( ':' );
         }
         m_contextStack.back().expectingValue = true;
         return *this;
@@ -150,7 +152,7 @@ namespace nfx::json
         }
         else
         {
-            m_buffer.push_back( ':' );
+            m_buffer.append( ':' );
         }
         m_contextStack.back().expectingValue = true;
         writeCommaIfNeeded();
@@ -172,7 +174,7 @@ namespace nfx::json
         }
         else
         {
-            m_buffer.push_back( ':' );
+            m_buffer.append( ':' );
         }
         m_contextStack.back().expectingValue = true;
         writeCommaIfNeeded();
@@ -194,7 +196,7 @@ namespace nfx::json
         }
         else
         {
-            m_buffer.push_back( ':' );
+            m_buffer.append( ':' );
         }
         m_contextStack.back().expectingValue = true;
         writeCommaIfNeeded();
@@ -216,7 +218,7 @@ namespace nfx::json
         }
         else
         {
-            m_buffer.push_back( ':' );
+            m_buffer.append( ':' );
         }
         m_contextStack.back().expectingValue = true;
         writeCommaIfNeeded();
@@ -238,7 +240,7 @@ namespace nfx::json
         }
         else
         {
-            m_buffer.push_back( ':' );
+            m_buffer.append( ':' );
         }
         m_contextStack.back().expectingValue = true;
         writeCommaIfNeeded();
@@ -260,7 +262,7 @@ namespace nfx::json
         }
         else
         {
-            m_buffer.push_back( ':' );
+            m_buffer.append( ':' );
         }
         m_contextStack.back().expectingValue = true;
         writeCommaIfNeeded();
@@ -282,7 +284,7 @@ namespace nfx::json
         }
         else
         {
-            m_buffer.push_back( ':' );
+            m_buffer.append( ':' );
         }
         m_contextStack.back().expectingValue = true;
         writeCommaIfNeeded();
@@ -304,7 +306,7 @@ namespace nfx::json
         }
         else
         {
-            m_buffer.push_back( ':' );
+            m_buffer.append( ':' );
         }
         m_contextStack.back().expectingValue = true;
         writeCommaIfNeeded();
@@ -326,7 +328,7 @@ namespace nfx::json
         }
         else
         {
-            m_buffer.push_back( ':' );
+            m_buffer.append( ':' );
         }
         m_contextStack.back().expectingValue = true;
         writeCommaIfNeeded();
@@ -354,7 +356,7 @@ namespace nfx::json
         }
         else
         {
-            m_buffer.push_back( ':' );
+            m_buffer.append( ':' );
         }
         writeDocument( value );
         return *this;
@@ -509,8 +511,7 @@ namespace nfx::json
 
     inline std::string Builder::toString()
     {
-        std::string result = std::move( m_buffer );
-        m_buffer.clear();
+        std::string result = std::move( m_buffer ).toString();
         m_contextStack.clear();
         m_currentIndent = 0;
         return result;
@@ -531,7 +532,7 @@ namespace nfx::json
 
     inline bool Builder::isEmpty() const noexcept
     {
-        return m_buffer.empty();
+        return m_buffer.isEmpty();
     }
 
     inline Builder& Builder::reserve( size_t capacity )
@@ -542,7 +543,7 @@ namespace nfx::json
 
     inline std::string_view Builder::toStringView() const noexcept
     {
-        return m_buffer;
+        return m_buffer.toStringView();
     }
 
     inline size_t Builder::capacity() const noexcept
@@ -580,28 +581,22 @@ namespace nfx::json
 
     inline void Builder::writeInt( int64_t value )
     {
-        char buf[32];
-        auto* end = std::to_chars( buf, buf + sizeof( buf ), value ).ptr;
-        m_buffer.append( buf, static_cast<size_t>( end - buf ) );
+        m_buffer.append( value );
     }
 
     inline void Builder::writeUInt( uint64_t value )
     {
-        char buf[32];
-        auto* end = std::to_chars( buf, buf + sizeof( buf ), value ).ptr;
-        m_buffer.append( buf, static_cast<size_t>( end - buf ) );
+        m_buffer.append( value );
     }
 
     inline void Builder::writeDouble( double value )
     {
-        char buf[32];
-        auto* end = std::to_chars( buf, buf + sizeof( buf ), value ).ptr;
-        m_buffer.append( buf, static_cast<size_t>( end - buf ) );
+        m_buffer.append( value );
     }
 
     inline void Builder::writeString( std::string_view str )
     {
-        m_buffer.push_back( '"' );
+        m_buffer.append( '"' );
 
 #if NFX_JSON_BUILDER_USE_SIMD
         static constexpr char hex[] = "0123456789abcdef";
@@ -641,7 +636,7 @@ namespace nfx::json
                 // but append clean prefix first
                 if( i > lastPos )
                 {
-                    m_buffer.append( str.data() + lastPos, i - lastPos );
+                    m_buffer.append( std::string_view( str.data() + lastPos, i - lastPos ) );
                     lastPos = i;
                 }
 
@@ -653,38 +648,38 @@ namespace nfx::json
                         // Append clean bytes before this one
                         if( i + j > lastPos )
                         {
-                            m_buffer.append( str.data() + lastPos, ( i + j ) - lastPos );
+                            m_buffer.append( std::string_view( str.data() + lastPos, ( i + j ) - lastPos ) );
                         }
 
                         unsigned char c = static_cast<unsigned char>( str[i + j] );
-                        m_buffer.push_back( '\\' );
+                        m_buffer.append( '\\' );
                         switch( c )
                         {
                             case '"':
-                                m_buffer.push_back( '"' );
+                                m_buffer.append( '"' );
                                 break;
                             case '\\':
-                                m_buffer.push_back( '\\' );
+                                m_buffer.append( '\\' );
                                 break;
                             case '\b':
-                                m_buffer.push_back( 'b' );
+                                m_buffer.append( 'b' );
                                 break;
                             case '\f':
-                                m_buffer.push_back( 'f' );
+                                m_buffer.append( 'f' );
                                 break;
                             case '\n':
-                                m_buffer.push_back( 'n' );
+                                m_buffer.append( 'n' );
                                 break;
                             case '\r':
-                                m_buffer.push_back( 'r' );
+                                m_buffer.append( 'r' );
                                 break;
                             case '\t':
-                                m_buffer.push_back( 't' );
+                                m_buffer.append( 't' );
                                 break;
                             default:
                                 m_buffer.append( "u00" );
-                                m_buffer.push_back( hex[( c >> 4 ) & 0xF] );
-                                m_buffer.push_back( hex[c & 0xF] );
+                                m_buffer.append( hex[( c >> 4 ) & 0xF] );
+                                m_buffer.append( hex[c & 0xF] );
                                 break;
                         }
 
@@ -705,37 +700,37 @@ namespace nfx::json
             {
                 if( i > lastPos )
                 {
-                    m_buffer.append( str.data() + lastPos, i - lastPos );
+                    m_buffer.append( std::string_view( str.data() + lastPos, i - lastPos ) );
                 }
 
-                m_buffer.push_back( '\\' );
+                m_buffer.append( '\\' );
                 switch( c )
                 {
                     case '"':
-                        m_buffer.push_back( '"' );
+                        m_buffer.append( '"' );
                         break;
                     case '\\':
-                        m_buffer.push_back( '\\' );
+                        m_buffer.append( '\\' );
                         break;
                     case '\b':
-                        m_buffer.push_back( 'b' );
+                        m_buffer.append( 'b' );
                         break;
                     case '\f':
-                        m_buffer.push_back( 'f' );
+                        m_buffer.append( 'f' );
                         break;
                     case '\n':
-                        m_buffer.push_back( 'n' );
+                        m_buffer.append( 'n' );
                         break;
                     case '\r':
-                        m_buffer.push_back( 'r' );
+                        m_buffer.append( 'r' );
                         break;
                     case '\t':
-                        m_buffer.push_back( 't' );
+                        m_buffer.append( 't' );
                         break;
                     default:
                         m_buffer.append( "u00" );
-                        m_buffer.push_back( hex[( c >> 4 ) & 0xF] );
-                        m_buffer.push_back( hex[c & 0xF] );
+                        m_buffer.append( hex[( c >> 4 ) & 0xF] );
+                        m_buffer.append( hex[c & 0xF] );
                         break;
                 }
 
@@ -745,7 +740,7 @@ namespace nfx::json
 
         if( lastPos < str.size() )
         {
-            m_buffer.append( str.data() + lastPos, str.size() - lastPos );
+            m_buffer.append( std::string_view( str.data() + lastPos, str.size() - lastPos ) );
         }
 #else
         static constexpr char hex[] = "0123456789abcdef";
@@ -758,37 +753,37 @@ namespace nfx::json
             {
                 if( i > lastPos )
                 {
-                    m_buffer.append( str.data() + lastPos, i - lastPos );
+                    m_buffer.append( std::string_view( str.data() + lastPos, i - lastPos ) );
                 }
 
-                m_buffer.push_back( '\\' );
+                m_buffer.append( '\\' );
                 switch( c )
                 {
                     case '"':
-                        m_buffer.push_back( '"' );
+                        m_buffer.append( '"' );
                         break;
                     case '\\':
-                        m_buffer.push_back( '\\' );
+                        m_buffer.append( '\\' );
                         break;
                     case '\b':
-                        m_buffer.push_back( 'b' );
+                        m_buffer.append( 'b' );
                         break;
                     case '\f':
-                        m_buffer.push_back( 'f' );
+                        m_buffer.append( 'f' );
                         break;
                     case '\n':
-                        m_buffer.push_back( 'n' );
+                        m_buffer.append( 'n' );
                         break;
                     case '\r':
-                        m_buffer.push_back( 'r' );
+                        m_buffer.append( 'r' );
                         break;
                     case '\t':
-                        m_buffer.push_back( 't' );
+                        m_buffer.append( 't' );
                         break;
                     default:
                         m_buffer.append( "u00" );
-                        m_buffer.push_back( hex[( c >> 4 ) & 0xF] );
-                        m_buffer.push_back( hex[c & 0xF] );
+                        m_buffer.append( hex[( c >> 4 ) & 0xF] );
+                        m_buffer.append( hex[c & 0xF] );
                         break;
                 }
 
@@ -798,16 +793,21 @@ namespace nfx::json
 
         if( lastPos < str.size() )
         {
-            m_buffer.append( str.data() + lastPos, str.size() - lastPos );
+            m_buffer.append( std::string_view( str.data() + lastPos, str.size() - lastPos ) );
         }
 #endif
-        m_buffer.push_back( '"' );
+        m_buffer.append( '"' );
     }
 
     inline void Builder::writeNewlineAndIndent()
     {
-        m_buffer.push_back( '\n' );
-        m_buffer.append( static_cast<size_t>( m_currentIndent ), ' ' );
+        m_buffer.append( '\n' );
+        if( m_currentIndent > 0 )
+        {
+            const size_t oldSize = m_buffer.size();
+            m_buffer.resize( oldSize + static_cast<size_t>( m_currentIndent ) );
+            std::memset( m_buffer.data() + oldSize, ' ', static_cast<size_t>( m_currentIndent ) );
+        }
     }
 
     inline void Builder::writeCommaIfNeeded()
@@ -828,7 +828,7 @@ namespace nfx::json
 
         if( !context.isEmpty )
         {
-            m_buffer.push_back( ',' );
+            m_buffer.append( ',' );
             if( m_indent > 0 )
             {
                 writeNewlineAndIndent();
@@ -916,7 +916,7 @@ namespace nfx::json
     inline void Builder::writeDocumentArray( const Array& array )
     {
         // Start array: write '[', push context, increase indent
-        m_buffer.push_back( '[' );
+        m_buffer.append( '[' );
         m_contextStack.push_back( { false, true, false } );
         if( m_indent > 0 )
         {
@@ -939,14 +939,14 @@ namespace nfx::json
                 writeNewlineAndIndent();
             }
         }
-        m_buffer.push_back( ']' );
+        m_buffer.append( ']' );
         m_contextStack.pop_back();
     }
 
     inline void Builder::writeDocumentObject( const Object& object )
     {
         // Start object: write '{', push context, increase indent
-        m_buffer.push_back( '{' );
+        m_buffer.append( '{' );
         m_contextStack.push_back( { true, true, false } );
         if( m_indent > 0 )
         {
@@ -965,7 +965,7 @@ namespace nfx::json
             }
             else
             {
-                m_buffer.push_back( ':' );
+                m_buffer.append( ':' );
             }
             writeDocument( value );
         }
@@ -979,7 +979,7 @@ namespace nfx::json
                 writeNewlineAndIndent();
             }
         }
-        m_buffer.push_back( '}' );
+        m_buffer.append( '}' );
         m_contextStack.pop_back();
     }
 } // namespace nfx::json

@@ -82,6 +82,13 @@ function(configure_target target_name)
         )
     endif()
 
+    if(TARGET nfx-stringbuilder::static)
+        target_link_libraries(${target_name}
+            PUBLIC
+                nfx-stringbuilder::static
+        )
+    endif()
+
     # --- Properties ---
     set_target_properties(${target_name}
         PROPERTIES

@@ -572,6 +572,7 @@ This project is licensed under the MIT License.
 ### Core Dependencies
 
 - **[nfx-stringutils](https://github.com/nfx-libs/nfx-stringutils)**: String manipulation utilities (MIT License)
+- **[nfx-stringbuilder](https://github.com/nfx-libs/nfx-stringbuilder)**: High-performance string builder with SBO (MIT License)
 - **[nfx-containers](https://github.com/nfx-libs/nfx-containers)**: Container utilities (MIT License)
 - **[nfx-hashing](https://github.com/nfx-libs/nfx-hashing)**: CRC32-C hashing for uniqueItems validation (MIT License)
 - **[nfx-resource](https://github.com/nfx-libs/nfx-resource)**: Resource embedding framework (MIT License) - Development only
@@ -585,4 +586,4 @@ All dependencies are automatically fetched via CMake FetchContent when building 
 
 ---
 
-_Updated on January 31, 2026_
+_Updated on February 04, 2026_

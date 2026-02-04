@@ -35,6 +35,7 @@
 #include "Document.h"
 
 #include <nfx/Containers.h>
+#include <nfx/string/StringBuilder.h>
 
 #include <charconv>
 #include <cstdint>
@@ -543,7 +544,7 @@ namespace nfx::json
          */
         inline void writeDocumentObject( const Object& object );
 
-        std::string m_buffer;                                    ///< JSON output buffer
+        string::StringBuilder m_buffer;                          ///< JSON output buffer
         int m_indent;                                            ///< Indentation level (0 = compact, >0 = pretty print)
         int m_currentIndent;                                     ///< Current indentation depth
         containers::SmallVector<ContextFrame, 8> m_contextStack; ///< Stack of nested object/array contexts

@@ -18,10 +18,11 @@ set(CMAKE_FIND_QUIETLY      ON     )
 # Dependency versions
 #----------------------------------------------
 
-set(NFX_JSON_DEPS_NFX_STRINGUTILS_VERSION "0.5.0")
-set(NFX_JSON_DEPS_NFX_CONTAINERS_VERSION  "0.3.2")
-set(NFX_JSON_DEPS_NFX_HASHING_VERSION     "0.1.2")
-set(NFX_JSON_DEPS_NFX_RESOURCE_VERSION    "1.1.0")
+set(NFX_JSON_DEPS_NFX_STRINGUTILS_VERSION    "0.5.0")
+set(NFX_JSON_DEPS_NFX_STRINGBUILDER_VERSION  "0.5.0")
+set(NFX_JSON_DEPS_NFX_CONTAINERS_VERSION     "0.3.2")
+set(NFX_JSON_DEPS_NFX_HASHING_VERSION        "0.1.2")
+set(NFX_JSON_DEPS_NFX_RESOURCE_VERSION       "1.1.0")
 
 #----------------------------------------------
 # FetchContent dependencies
@@ -57,6 +58,28 @@ if(NOT nfx-stringutils_FOUND)
     )
     FetchContent_MakeAvailable(nfx-stringutils)
     set(NFX_STRINGUTILS_INCLUDE_DIR "${nfx-stringutils_SOURCE_DIR}/include" CACHE INTERNAL "nfx-stringutils include directory")
+endif()
+
+# --- nfx-stringbuilder ---
+find_package(nfx-stringbuilder ${NFX_JSON_DEPS_NFX_STRINGBUILDER_VERSION} QUIET)
+if(NOT nfx-stringbuilder_FOUND)
+    set(NFX_STRINGBUILDER_BUILD_TESTS         OFF CACHE BOOL "")
+    set(NFX_STRINGBUILDER_BUILD_SAMPLES       OFF CACHE BOOL "")
+    set(NFX_STRINGBUILDER_BUILD_BENCHMARKS    OFF CACHE BOOL "")
+    set(NFX_STRINGBUILDER_BUILD_DOCUMENTATION OFF CACHE BOOL "")
+    set(NFX_STRINGBUILDER_INSTALL_PROJECT     OFF CACHE BOOL "")
+    set(NFX_STRINGBUILDER_PACKAGE_SOURCE      OFF CACHE BOOL "")
+    set(NFX_STRINGBUILDER_PACKAGE_ARCHIVE     OFF CACHE BOOL "")
+    set(NFX_STRINGBUILDER_PACKAGE_DEB         OFF CACHE BOOL "")
+    set(NFX_STRINGBUILDER_PACKAGE_RPM         OFF CACHE BOOL "")
+
+    FetchContent_Declare(
+        nfx-stringbuilder
+            GIT_REPOSITORY https://github.com/nfx-libs/nfx-stringbuilder.git
+            GIT_TAG        ${NFX_JSON_DEPS_NFX_STRINGBUILDER_VERSION}
+            GIT_SHALLOW    TRUE
+    )
+    FetchContent_MakeAvailable(nfx-stringbuilder)
 endif()
 
 # --- nfx-containers ---

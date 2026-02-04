@@ -4,11 +4,14 @@
 
 ### Added
 
-- NIL
+- **Dependencies**: nfx-stringbuilder v0.5.0 as public dependency
 
 ### Changed
 
-- NIL
+- **Builder**: Replaced `std::string` internal buffer with `nfx::string::StringBuilder` for significantly improved performance
+- **Builder**: Optimized `writeNewlineAndIndent()` using `resize()` + `memset()` instead of character-by-character loop
+- **Builder**: Updated `toString()` to use move semantics with StringBuilder's rvalue overload
+- **Builder**: Numeric conversions now use StringBuilder's native `append(int64_t/uint64_t/double)` methods
 
 ### Deprecated
 
