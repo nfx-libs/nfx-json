@@ -4,14 +4,11 @@
 
 ### Added
 
-- **Dependencies**: nfx-stringbuilder v0.5.0 as public dependency
+- NIL
 
 ### Changed
 
-- **Builder**: Replaced `std::string` internal buffer with `nfx::string::StringBuilder` for significantly improved performance
-- **Builder**: Optimized `writeNewlineAndIndent()` using `resize()` + `memset()` instead of character-by-character loop
-- **Builder**: Updated `toString()` to use move semantics with StringBuilder's rvalue overload
-- **Builder**: Numeric conversions now use StringBuilder's native `append(int64_t/uint64_t/double)` methods
+- NIL
 
 ### Deprecated
 
@@ -28,6 +25,17 @@
 ### Security
 
 - NIL
+
+## [1.2.0] - 2026-02-04
+
+### Added
+
+- **Dependencies**: nfx-stringbuilder v0.5.0 as public dependency
+
+### Changed
+
+- **Builder**: Replaced internal buffer implementation with `nfx::string::StringBuilder` for significantly improved serialization performance
+- **Builder**: Optimized `writeNewlineAndIndent()` using `resize()` + `memset()` instead of character-by-character loop
 
 ## [1.1.2] - 2026-02-03
 
@@ -71,10 +79,6 @@
 - **Parser**: Renamed internal `JsonParser` to `Parser` (implementation detail)
 - Bump nfx-containers from 0.3.0 to 0.3.1
 
-### Deprecated
-
-- NIL
-
 ### Removed
 
 - **Internal**: `JsonWriter` class replaced by public `Builder` API
@@ -82,10 +86,6 @@
 ### Fixed
 
 - **Document**: Replace `thread_local` with `static` in `operator[]` const for better portability
-
-### Security
-
-- NIL
 
 ## [1.0.3] - 2026-01-27
 
