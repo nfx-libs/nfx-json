@@ -8,7 +8,7 @@
 
 ### Changed
 
-- Bump nfx-stringutils from 0.6.0 to 0.6.1
+- NIL
 
 ### Deprecated
 
@@ -25,6 +25,12 @@
 ### Security
 
 - NIL
+
+## [1.3.1] - 2026-02-06
+
+### Changed
+
+- Bump nfx-stringutils from 0.6.0 to 0.6.1 (forward slash escaping now RFC 8259 compliant)
 
 ## [1.3.0] - 2026-02-06
 
