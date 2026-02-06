@@ -4,11 +4,11 @@
 
 ### Added
 
-- **Builder**: `escapeNonAscii` option to encode non-ASCII UTF-8 characters as `\uXXXX` sequences (BMP) or surrogate pairs (supplementary planes)
+- NIL
 
 ### Changed
 
-- Bump nfx-stringutils from 0.5.4 to 0.6.0
+- NIL
 
 ### Deprecated
 
@@ -25,6 +25,16 @@
 ### Security
 
 - NIL
+
+## [1.3.0] - 2026-02-06
+
+### Added
+
+- **Builder**: `escapeNonAscii` option to encode non-ASCII UTF-8 characters as `\uXXXX` sequences (BMP) or surrogate pairs (supplementary planes)
+
+### Changed
+
+- Bump nfx-stringutils from 0.5.4 to 0.6.0
 
 ## [1.2.1] - 2026-02-04
 
