@@ -63,7 +63,8 @@ function(configure_target target_name)
     # --- Add nfx-stringutils include directory ---
     if(NFX_STRINGUTILS_INCLUDE_DIR)
         target_include_directories(${target_name}
-            PRIVATE ${NFX_STRINGUTILS_INCLUDE_DIR}
+            PUBLIC
+                $<BUILD_INTERFACE:${NFX_STRINGUTILS_INCLUDE_DIR}>
         )
     endif()
 

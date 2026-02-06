@@ -4,7 +4,7 @@
 
 ### Added
 
-- NIL
+- **Builder**: `escapeNonAscii` option to encode non-ASCII UTF-8 characters as `\uXXXX` sequences (BMP) or surrogate pairs (supplementary planes)
 
 ### Changed
 

@@ -95,6 +95,7 @@ list(APPEND test_sources
     Tests_JsonPathView.cpp
     Tests_JsonSchemaGenerator.cpp
     Tests_JsonSchemaValidator.cpp
+    Tests_StringUtilsJsonEscape.cpp
 )
 
 #----------------------------------------------
@@ -115,6 +116,7 @@ foreach(test_source ${test_sources})
             PRIVATE
                 nfx-json::static
                 nfx-json-embeddedtestdata
+                nfx-stringutils::nfx-stringutils
                 GTest::gtest_main
         )
 

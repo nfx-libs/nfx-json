@@ -27,7 +27,7 @@
  * @brief Inline Implementation of Builder class
  */
 
-#include <cstring>
+#include <nfx/string/Utils.h>
 
 #if defined( __SSE2__ ) || defined( _M_X64 ) || ( defined( _M_IX86_FP ) && _M_IX86_FP >= 2 )
 #    include <emmintrin.h>
@@ -40,7 +40,8 @@ namespace nfx::json
 {
     inline Builder::Builder( Options options )
         : m_indent{ options.indent },
-          m_currentIndent{ 0 }
+          m_currentIndent{ 0 },
+          m_escapeNonAscii{ options.escapeNonAscii }
     {
         m_buffer.reserve( options.bufferSize );
     }
@@ -597,6 +598,13 @@ namespace nfx::json
     inline void Builder::writeString( std::string_view str )
     {
         m_buffer.append( '"' );
+
+        if( m_escapeNonAscii )
+        {
+            m_buffer.append( nfx::string::jsonEscape( str, true ) );
+            m_buffer.append( '"' );
+            return;
+        }
 
 #if NFX_JSON_BUILDER_USE_SIMD
         static constexpr char hex[] = "0123456789abcdef";

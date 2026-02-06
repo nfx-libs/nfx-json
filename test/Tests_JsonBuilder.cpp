@@ -1262,4 +1262,183 @@ namespace nfx::json::test
         std::string json = builder.toString();
         EXPECT_EQ( json, R"({"list":[1,2,3],"set":[1,2,3],"deque":[4,5,6]})" );
     }
+
+    //=====================================================================
+    // UTF-8 escapeNonAscii option tests
+    //=====================================================================
+
+    TEST_F( BuilderTest, EscapeNonAscii_Disabled_DefaultBehavior )
+    {
+        // Default: escapeNonAscii = false, UTF-8 passes through
+        Builder builder;
+        builder.writeStartObject();
+        builder.write( "french", "café" );
+        builder.write( "japanese", "日本語" );
+        builder.write( "emoji", "🎉" );
+        builder.writeEndObject();
+
+        std::string json = builder.toString();
+        EXPECT_EQ( json, R"({"french":"café","japanese":"日本語","emoji":"🎉"})" );
+    }
+
+    TEST_F( BuilderTest, EscapeNonAscii_Enabled_Latin1Supplement )
+    {
+        // escapeNonAscii = true, escape Latin-1 characters
+        Builder::Options opts{ 0, 4096, true };
+        Builder builder{ opts };
+
+        builder.writeStartObject();
+        builder.write( "cafe", "café" );
+        builder.write( "mixed", "Hello café!" );
+        builder.writeEndObject();
+
+        std::string json = builder.toString();
+        EXPECT_EQ( json, R"({"cafe":"caf\u00e9","mixed":"Hello caf\u00e9!"})" );
+    }
+
+    TEST_F( BuilderTest, EscapeNonAscii_Enabled_CJK_Characters )
+    {
+        // Test CJK characters (BMP, 3-byte UTF-8)
+        Builder::Options opts{ 0, 4096, true };
+        Builder builder{ opts };
+
+        builder.writeStartObject();
+        builder.write( "chinese", "中文" );
+        builder.write( "japanese", "日本語" );
+        builder.writeEndObject();
+
+        std::string json = builder.toString();
+        EXPECT_EQ( json, R"({"chinese":"\u4e2d\u6587","japanese":"\u65e5\u672c\u8a9e"})" );
+    }
+
+    TEST_F( BuilderTest, EscapeNonAscii_Enabled_Emoji_SurrogatePairs )
+    {
+        // Test emoji (supplementary plane, require UTF-16 surrogate pairs)
+        Builder::Options opts{ 0, 4096, true };
+        Builder builder{ opts };
+
+        builder.writeStartObject();
+        builder.write( "party", "🎉" );        // U+1F389
+        builder.write( "smile", "😀" );        // U+1F600
+        builder.write( "multiple", "🎉😀🎊" ); // Multiple emoji
+        builder.writeEndObject();
+
+        std::string json = builder.toString();
+        EXPECT_EQ(
+            json,
+            "{\"party\":\"\\ud83c\\udf89\",\"smile\":\"\\ud83d\\ude00\",\"multiple\":"
+            "\"\\ud83c\\udf89\\ud83d\\ude00\\ud83c\\udf8a\"}" );
+    }
+
+    TEST_F( BuilderTest, EscapeNonAscii_Enabled_MixedContent )
+    {
+        // Mixed ASCII + UTF-8 + control characters
+        Builder::Options opts{ 0, 4096, true };
+        Builder builder{ opts };
+
+        builder.writeStartObject();
+        builder.write( "mixed", "Hello 世界 🌍" );
+        builder.write( "with_newline", "Line1\nCafé" );
+        builder.write( "with_quote", "\"Hello\" 中文" );
+        builder.writeEndObject();
+
+        std::string json = builder.toString();
+        EXPECT_EQ(
+            json,
+            "{\"mixed\":\"Hello \\u4e16\\u754c "
+            "\\ud83c\\udf0d\",\"with_newline\":\"Line1\\nCaf\\u00e9\",\"with_quote\":\"\\\"Hello\\\" "
+            "\\u4e2d\\u6587\"}" );
+    }
+
+    TEST_F( BuilderTest, EscapeNonAscii_Enabled_EmptyAndAsciiOnly )
+    {
+        // Edge cases: empty strings and ASCII-only strings
+        Builder::Options opts{ 0, 4096, true };
+        Builder builder{ opts };
+
+        builder.writeStartObject();
+        builder.write( "empty", "" );
+        builder.write( "ascii", "Hello World!" );
+        builder.write( "numbers", "12345" );
+        builder.writeEndObject();
+
+        std::string json = builder.toString();
+        EXPECT_EQ( json, R"({"empty":"","ascii":"Hello World!","numbers":"12345"})" );
+    }
+
+    TEST_F( BuilderTest, EscapeNonAscii_Enabled_SpecialUtf8Sequences )
+    {
+        // Various UTF-8 byte lengths
+        Builder::Options opts{ 0, 4096, true };
+        Builder builder{ opts };
+
+        builder.writeStartObject();
+        builder.write( "2byte", "€" );    // U+20AC (2-byte UTF-8)
+        builder.write( "3byte", "￥" );   // U+FFE5 (3-byte UTF-8)
+        builder.write( "greek", "α" );    // U+03B1 (2-byte UTF-8)
+        builder.write( "cyrillic", "Я" ); // U+042F (2-byte UTF-8)
+        builder.writeEndObject();
+
+        std::string json = builder.toString();
+        EXPECT_EQ(
+            json, "{\"2byte\":\"\\u20ac\",\"3byte\":\"\\uffe5\",\"greek\":\"\\u03b1\",\"cyrillic\":\"\\u042f\"}" );
+    }
+
+    TEST_F( BuilderTest, EscapeNonAscii_WithIndentation )
+    {
+        // Verify escapeNonAscii works with pretty-printing
+        Builder::Options opts{ 2, 4096, true };
+        Builder builder{ opts };
+
+        builder.writeStartObject();
+        builder.write( "french", "café" );
+        builder.write( "emoji", "🎉" );
+        builder.writeEndObject();
+
+        std::string json = builder.toString();
+        std::string expected =
+            "{\n"
+            "  \"french\": \"caf\\u00e9\",\n"
+            "  \"emoji\": \"\\ud83c\\udf89\"\n"
+            "}";
+        EXPECT_EQ( json, expected );
+    }
+
+    TEST_F( BuilderTest, EscapeNonAscii_InArrays )
+    {
+        // Test UTF-8 escaping in arrays
+        Builder::Options opts{ 0, 4096, true };
+        Builder builder{ opts };
+
+        builder.writeStartObject();
+        builder.writeKey( "items" );
+        builder.writeStartArray();
+        builder.write( "café" );
+        builder.write( "日本" );
+        builder.write( "🎉" );
+        builder.writeEndArray();
+        builder.writeEndObject();
+
+        std::string json = builder.toString();
+        EXPECT_EQ( json, "{\"items\":[\"caf\\u00e9\",\"\\u65e5\\u672c\",\"\\ud83c\\udf89\"]}" );
+    }
+
+    TEST_F( BuilderTest, EscapeNonAscii_NestedObjects )
+    {
+        // Test UTF-8 escaping in nested structures
+        Builder::Options opts{ 0, 4096, true };
+        Builder builder{ opts };
+
+        builder.writeStartObject();
+        builder.writeKey( "languages" );
+        builder.writeStartObject();
+        builder.write( "french", "Bonjour" );
+        builder.write( "japanese", "こんにちは" );
+        builder.writeEndObject();
+        builder.writeEndObject();
+
+        std::string json = builder.toString();
+        EXPECT_EQ(
+            json, "{\"languages\":{\"french\":\"Bonjour\",\"japanese\":\"\\u3053\\u3093\\u306b\\u3061\\u306f\"}}" );
+    }
 } // namespace nfx::json::test

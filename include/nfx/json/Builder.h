@@ -75,13 +75,21 @@ namespace nfx::json
 
             /** @brief Initial buffer capacity hint */
             size_t bufferSize;
+
+            /** @brief Escape non-ASCII UTF-8 characters as \\uXXXX escape sequences
+             *  @details When enabled, Unicode code points > U+007F are encoded as JSON escape sequences.
+             *           - Basic Multilingual Plane (U+0000 to U+FFFF): encoded as \\uXXXX
+             *           - Supplementary planes (U+10000 to U+10FFFF): encoded as UTF-16 surrogate pairs \\uXXXX\\uXXXX
+             *           Invalid UTF-8 sequences are escaped byte-by-byte as \\u00XX.
+             */
+            bool escapeNonAscii = false;
         };
 
         /**
          * @brief Constructor with options
          * @param options Configuration options for the builder
          */
-        inline explicit Builder( Options options = { 0, 4096 } );
+        inline explicit Builder( Options options = { 0, 4096, false } );
 
         /**
          * @brief Start writing a JSON object
@@ -547,6 +555,7 @@ namespace nfx::json
         string::StringBuilder m_buffer;                          ///< JSON output buffer
         int m_indent;                                            ///< Indentation level (0 = compact, >0 = pretty print)
         int m_currentIndent;                                     ///< Current indentation depth
+        bool m_escapeNonAscii;                                   ///< Escape non-ASCII characters as \\uXXXX
         containers::SmallVector<ContextFrame, 8> m_contextStack; ///< Stack of nested object/array contexts
     };
 } // namespace nfx::json
