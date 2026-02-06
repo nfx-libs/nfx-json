@@ -8,7 +8,7 @@
 
 ### Changed
 
-- NIL
+- Bump nfx-stringutils from 0.5.4 to 0.6.0
 
 ### Deprecated
 
