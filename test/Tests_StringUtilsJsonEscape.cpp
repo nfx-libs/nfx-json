@@ -42,7 +42,7 @@ TEST( JsonEscape, BasicEscapeSequences )
     // Test standard escape sequences
     EXPECT_EQ( jsonEscape( "\"" ), "\\\"" );
     EXPECT_EQ( jsonEscape( "\\" ), "\\\\" );
-    EXPECT_EQ( jsonEscape( "/" ), "\\/" );
+    EXPECT_EQ( jsonEscape( "/" ), "/" );
     EXPECT_EQ( jsonEscape( "\b" ), "\\b" );
     EXPECT_EQ( jsonEscape( "\f" ), "\\f" );
     EXPECT_EQ( jsonEscape( "\n" ), "\\n" );
