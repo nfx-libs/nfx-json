@@ -26,6 +26,12 @@
 
 - NIL
 
+## [1.3.3] - 2026-02-08
+
+### Changed
+
+- Bump nfx-containers from 0.4.0 to 0.4.1
+
 ## [1.3.2] - 2026-02-08
 
 ### Changed

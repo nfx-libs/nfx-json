@@ -20,7 +20,7 @@ set(CMAKE_FIND_QUIETLY      ON     )
 
 set(NFX_JSON_DEPS_NFX_STRINGUTILS_VERSION    "0.6.1")
 set(NFX_JSON_DEPS_NFX_STRINGBUILDER_VERSION  "0.5.0")
-set(NFX_JSON_DEPS_NFX_CONTAINERS_VERSION     "0.4.0")
+set(NFX_JSON_DEPS_NFX_CONTAINERS_VERSION     "0.4.1")
 set(NFX_JSON_DEPS_NFX_HASHING_VERSION        "0.2.0")
 set(NFX_JSON_DEPS_NFX_RESOURCE_VERSION       "1.1.0")
 
@@ -55,6 +55,7 @@ if(NOT nfx-stringutils_FOUND)
             GIT_REPOSITORY https://github.com/nfx-libs/nfx-stringutils.git
             GIT_TAG        ${NFX_JSON_DEPS_NFX_STRINGUTILS_VERSION}
             GIT_SHALLOW    TRUE
+            EXCLUDE_FROM_ALL
     )
     FetchContent_MakeAvailable(nfx-stringutils)
     set(NFX_STRINGUTILS_INCLUDE_DIR "${nfx-stringutils_SOURCE_DIR}/include" CACHE INTERNAL "nfx-stringutils include directory")
@@ -80,6 +81,7 @@ if(NOT nfx-stringbuilder_FOUND)
             GIT_REPOSITORY https://github.com/nfx-libs/nfx-stringbuilder.git
             GIT_TAG        ${NFX_JSON_DEPS_NFX_STRINGBUILDER_VERSION}
             GIT_SHALLOW    TRUE
+            EXCLUDE_FROM_ALL
     )
     FetchContent_MakeAvailable(nfx-stringbuilder)
 endif()
@@ -102,6 +104,7 @@ if(NOT nfx-containers_FOUND)
             GIT_REPOSITORY https://github.com/nfx-libs/nfx-containers
             GIT_TAG        ${NFX_JSON_DEPS_NFX_CONTAINERS_VERSION}
             GIT_SHALLOW    TRUE
+            EXCLUDE_FROM_ALL
     )
     FetchContent_MakeAvailable(nfx-containers)
 endif()
@@ -124,6 +127,7 @@ if(NOT nfx-hashing_FOUND)
             GIT_REPOSITORY https://github.com/nfx-libs/nfx-hashing.git
             GIT_TAG        ${NFX_JSON_DEPS_NFX_HASHING_VERSION}
             GIT_SHALLOW    TRUE
+            EXCLUDE_FROM_ALL
     )
     FetchContent_MakeAvailable(nfx-hashing)
 endif()
@@ -139,6 +143,7 @@ if(NOT nfx-resource_FOUND)
             GIT_REPOSITORY https://github.com/nfx-libs/nfx-resource.git
             GIT_TAG        ${NFX_JSON_DEPS_NFX_RESOURCE_VERSION}
             GIT_SHALLOW    TRUE
+            EXCLUDE_FROM_ALL
     )
     FetchContent_MakeAvailable(nfx-resource)
 endif()
