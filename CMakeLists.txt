@@ -9,7 +9,7 @@
 cmake_minimum_required(VERSION 3.20)
 
 project(nfx-json
-    VERSION 1.3.1
+    VERSION 1.3.2
     DESCRIPTION "Modern C++20 JSON library with schema validation and generation"
     HOMEPAGE_URL "https://github.com/nfx-libs/nfx-json"
     LANGUAGES CXX

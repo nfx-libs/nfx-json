@@ -26,6 +26,13 @@
 
 - NIL
 
+## [1.3.2] - 2026-02-08
+
+### Changed
+
+- Bump nfx-containers from 0.3.2 to 0.4.0
+- Bump nfx-hashing from 0.1.2 to 0.2.0
+
 ## [1.3.1] - 2026-02-06
 
 ### Changed

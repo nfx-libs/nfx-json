@@ -556,7 +556,7 @@ namespace nfx::json
         int m_indent;                                            ///< Indentation level (0 = compact, >0 = pretty print)
         int m_currentIndent;                                     ///< Current indentation depth
         bool m_escapeNonAscii;                                   ///< Escape non-ASCII characters as \\uXXXX
-        containers::SmallVector<ContextFrame, 8> m_contextStack; ///< Stack of nested object/array contexts
+        containers::StackVector<ContextFrame, 8> m_contextStack; ///< Stack of nested object/array contexts
     };
 } // namespace nfx::json
 
