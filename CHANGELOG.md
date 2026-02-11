@@ -26,6 +26,13 @@
 
 - NIL
 
+## [1.3.4] - 2026-02-11
+
+### Changed
+
+- Bump nfx-stringbuilder from 0.5.0 to 0.6.0
+- Bump nfx-stringutils from 0.6.1 to 0.6.2
+
 ## [1.3.3] - 2026-02-08
 
 ### Changed
