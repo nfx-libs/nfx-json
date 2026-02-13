@@ -29,6 +29,7 @@ set_and_check(NFX_JSON_LIB_DIR "@PACKAGE_CMAKE_INSTALL_LIBDIR@")
 # Required dependencies
 include(CMakeFindDependencyMacro)
 find_dependency(nfx-stringutils REQUIRED)
+find_dependency(nfx-stringbuilder REQUIRED)
 find_dependency(nfx-containers REQUIRED)
 find_dependency(nfx-hashing REQUIRED)
 
