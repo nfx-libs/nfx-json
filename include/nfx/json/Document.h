@@ -248,7 +248,14 @@ namespace nfx::json
          * @brief Move constructor
          * @param other The Document to move from
          */
+#if defined( __GNUC__ ) && !defined( __clang__ )
+#    pragma GCC diagnostic push
+#    pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#endif
         Document( Document&& other ) noexcept = default;
+#if defined( __GNUC__ ) && !defined( __clang__ )
+#    pragma GCC diagnostic pop
+#endif
 
         /** @brief Destructor */
         ~Document() = default;
@@ -1778,8 +1785,14 @@ namespace nfx::json
         // Private members
         //----------------------------------------------
 
-        // Storage for all JSON value types
+#if defined( __GNUC__ ) && !defined( __clang__ )
+#    pragma GCC diagnostic push
+#    pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#endif
         std::variant<std::nullptr_t, bool, int64_t, uint64_t, double, std::string, Array, Object> m_data;
+#if defined( __GNUC__ ) && !defined( __clang__ )
+#    pragma GCC diagnostic pop
+#endif
     };
 } // namespace nfx::json
 
