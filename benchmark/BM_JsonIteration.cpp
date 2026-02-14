@@ -85,7 +85,8 @@ namespace nfx::json::benchmark
     static void ObjectFieldIteration( ::benchmark::State& state )
     {
         Document doc = createObjectDocument();
-        const auto& obj = doc.rootRef<Object>().value().get();
+        auto objOpt = doc.rootRef<Object>();
+        const auto& obj = objOpt.value().get();
 
         for( auto _ : state )
         {
@@ -112,13 +113,14 @@ namespace nfx::json::benchmark
     static void ArrayElementIteration( ::benchmark::State& state )
     {
         Document doc = createArrayDocument();
-        const auto& arr = doc.rootRef<Array>().value().get();
+        auto arrOpt = doc.rootRef<Array>();
+        const auto& arr = arrOpt.value().get();
 
         for( auto _ : state )
         {
             (void)_;
 
-            int sum = 0;
+            int64_t sum = 0;
             for( const auto& elem : arr )
             {
                 sum += elem.rootRef<int64_t>().value().get();
