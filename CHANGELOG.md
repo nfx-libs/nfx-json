@@ -26,6 +26,23 @@
 
 - NIL
 
+## [1.4.0] - 2026-02-14
+
+### Added
+
+- Strict compiler warning options (`-Wall -Wextra -Werror` for GCC/Clang, `/W4 /WX` for MSVC)
+- `/utf-8` flag for MSVC to properly handle UTF-8 source files
+- Workaround for GCC 15.2.0 false positive `-Wmaybe-uninitialized` on MinGW with `std::variant` move constructors
+
+### Fixed
+
+- Set default values for `Builder::Options` struct members (`indent = 0`, `bufferSize = 4096`)
+- Refactor `rootRef()` usage in tests to avoid dangling reference warnings by storing `optional` before accessing reference
+- Update escape sequence tests to use non-raw string literals for incomplete `\uXXXX` sequences (MSVC compatibility)
+- Improve variable naming in `Sample_JsonPathView` to avoid shadowing warnings (`valInt`, `valDbl`, `valBool`)
+- Fix type conversion warning in `BM_JsonIteration` (changed `int sum` to `int64_t sum`)
+- Ensure `nfx-stringbuilder` is declared as required dependency in package config
+
 ## [1.3.4] - 2026-02-11
 
 ### Changed
