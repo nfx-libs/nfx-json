@@ -174,15 +174,15 @@ int main()
             {
                 type = "string";
             }
-            else if( auto val = entry.value().get<int>( "" ) )
+            else if( auto valInt = entry.value().get<int>( "" ) )
             {
                 type = "integer";
             }
-            else if( auto val = entry.value().get<double>( "" ) )
+            else if( auto valDbl = entry.value().get<double>( "" ) )
             {
                 type = "number";
             }
-            else if( auto val = entry.value().get<bool>( "" ) )
+            else if( auto valBool = entry.value().get<bool>( "" ) )
             {
                 type = "boolean";
             }
