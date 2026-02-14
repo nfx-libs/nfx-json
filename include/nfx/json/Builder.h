@@ -71,10 +71,10 @@ namespace nfx::json
         struct Options
         {
             /** @brief Indentation level (0 = compact, >0 = pretty print with N spaces per level) */
-            int indent;
+            int indent = 0;
 
             /** @brief Initial buffer capacity hint */
-            size_t bufferSize;
+            size_t bufferSize = 4096;
 
             /** @brief Escape non-ASCII UTF-8 characters as \\uXXXX escape sequences
              *  @details When enabled, Unicode code points > U+007F are encoded as JSON escape sequences.
