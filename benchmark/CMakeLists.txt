@@ -97,6 +97,18 @@ foreach(benchmark_source ${benchmark_sources})
         )
 
         #----------------------------------------------
+        # Compiler warnings
+        #----------------------------------------------
+
+        target_compile_options(${benchmark_target_name}
+            PRIVATE
+                $<$<CXX_COMPILER_ID:MSVC>:/W4 /WX /utf-8>
+                $<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>>:-Wall -Wextra -Werror>
+                # Workaround for GCC 15.2.0 false positive on MinGW with std::variant move constructors
+                $<$<AND:$<CXX_COMPILER_ID:GNU>,$<PLATFORM_ID:Windows>>:-Wno-maybe-uninitialized>
+        )
+
+        #----------------------------------------------
         # Properties
         #----------------------------------------------
 
