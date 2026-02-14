@@ -18,11 +18,11 @@ set(CMAKE_FIND_QUIETLY      ON     )
 # Dependency versions
 #----------------------------------------------
 
-set(NFX_JSON_DEPS_NFX_CONTAINERS_VERSION    "0.4.1")
-set(NFX_JSON_DEPS_NFX_HASHING_VERSION       "0.2.0")
+set(NFX_JSON_DEPS_NFX_CONTAINERS_VERSION    "0.5.1")
+set(NFX_JSON_DEPS_NFX_HASHING_VERSION       "0.3.1")
 set(NFX_JSON_DEPS_NFX_RESOURCE_VERSION      "1.1.0")
-set(NFX_JSON_DEPS_NFX_STRINGBUILDER_VERSION "0.6.0")
-set(NFX_JSON_DEPS_NFX_STRINGUTILS_VERSION   "0.6.2")
+set(NFX_JSON_DEPS_NFX_STRINGBUILDER_VERSION "0.6.2")
+set(NFX_JSON_DEPS_NFX_STRINGUTILS_VERSION   "0.6.4")
 
 #----------------------------------------------
 # FetchContent dependencies
@@ -53,7 +53,8 @@ if(NOT nfx-containers_FOUND)
     FetchContent_Declare(
         nfx-containers
             GIT_REPOSITORY https://github.com/nfx-libs/nfx-containers
-            GIT_TAG        ${NFX_JSON_DEPS_NFX_CONTAINERS_VERSION}
+            #GIT_TAG        ${NFX_JSON_DEPS_NFX_CONTAINERS_VERSION}
+            GIT_TAG        main
             GIT_SHALLOW    TRUE
             EXCLUDE_FROM_ALL
     )
