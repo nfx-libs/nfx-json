@@ -154,8 +154,8 @@ int main()
                 auto objCopy = doc.get<Object>( "" );
                 if( objCopy.has_value() )
                 {
-                    size_t count = 0;
-                    for( const auto& [key, value] : objCopy.value() )
+                    [[maybe_unused]] size_t count = 0;
+                    for( [[maybe_unused]] const auto& [key, value] : objCopy.value() )
                     {
                         ++count;
                     }
@@ -168,8 +168,8 @@ int main()
                 auto objRef = doc.getRef<Object>( "" );
                 if( objRef.has_value() )
                 {
-                    size_t count = 0;
-                    for( const auto& [key, value] : objRef->get() )
+                    [[maybe_unused]] size_t count = 0;
+                    for( [[maybe_unused]] const auto& [key, value] : objRef->get() )
                     {
                         ++count;
                     }
