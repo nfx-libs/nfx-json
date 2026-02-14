@@ -26,6 +26,12 @@
 
 - NIL
 
+## [1.4.1] - 2026-02-14
+
+### Fixed
+
+- Replace global `-Wno-maybe-uninitialized` compiler flag with targeted `#pragma` directives in `Document.h` to avoid suppressing legitimate warnings in other parts of the codebase
+
 ## [1.4.0] - 2026-02-14
 
 ### Added
