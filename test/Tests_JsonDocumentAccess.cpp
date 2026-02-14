@@ -149,16 +149,20 @@ namespace nfx::json::test
         Document dblDoc{ 3.14 };
         Document boolDoc{ true };
 
-        auto& str = strDoc.rootRef<std::string>().value().get();
+        auto strOpt = strDoc.rootRef<std::string>();
+        auto& str = strOpt.value().get();
         EXPECT_EQ( str, "hello" );
 
-        auto& num = intDoc.rootRef<int64_t>().value().get();
+        auto numOpt = intDoc.rootRef<int64_t>();
+        auto& num = numOpt.value().get();
         EXPECT_EQ( num, 42 );
 
-        auto& dbl = dblDoc.rootRef<double>().value().get();
+        auto dblOpt = dblDoc.rootRef<double>();
+        auto& dbl = dblOpt.value().get();
         EXPECT_DOUBLE_EQ( dbl, 3.14 );
 
-        auto& boolean = boolDoc.rootRef<bool>().value().get();
+        auto boolOpt = boolDoc.rootRef<bool>();
+        auto& boolean = boolOpt.value().get();
         EXPECT_TRUE( boolean );
     }
 
@@ -175,7 +179,8 @@ namespace nfx::json::test
         auto doc = Document::fromString( R"([1,2,3])" );
         ASSERT_TRUE( doc.has_value() );
 
-        auto& arr = doc->rootRef<Array>().value().get();
+        auto arrOpt = doc->rootRef<Array>();
+        auto& arr = arrOpt.value().get();
         arr.push_back( Document{ int64_t{ 4 } } );
         arr.push_back( Document{ int64_t{ 5 } } );
 
@@ -202,7 +207,7 @@ namespace nfx::json::test
         ASSERT_TRUE( doc.has_value() );
         const Document& constDoc = *doc;
 
-        const auto& obj = constDoc.rootRef<Object>().value().get();
+        const auto obj = constDoc.rootRef<Object>().value().get();
         EXPECT_EQ( obj.size(), 1 );
 
         // Check if key exists
@@ -228,7 +233,7 @@ namespace nfx::json::test
         ASSERT_TRUE( doc.has_value() );
 
         // Optimal: chain operator[] then rootRef
-        const auto& name = ( *doc )["user"]["profile"]["name"].rootRef<std::string>().value().get();
+        const auto name = ( *doc )["user"]["profile"]["name"].rootRef<std::string>().value().get();
 
         EXPECT_EQ( name, "Alice" );
     }
@@ -283,7 +288,7 @@ namespace nfx::json::test
         ASSERT_TRUE( strRef.has_value() );
         EXPECT_EQ( strRef->get(), "test" );
 
-        const auto& strDirect = ( *doc )["str"].rootRef<std::string>().value().get();
+        const auto strDirect = ( *doc )["str"].rootRef<std::string>().value().get();
         EXPECT_EQ( strDirect, "test" );
     }
 
@@ -304,7 +309,7 @@ namespace nfx::json::test
         EXPECT_EQ( valueOpt.value(), 123 );
 
         // New way: chained operator[] (cleaner, faster)
-        const auto& value = ( *doc )["user"]["data"]["value"].rootRef<int64_t>().value().get();
+        const auto value = ( *doc )["user"]["data"]["value"].rootRef<int64_t>().value().get();
         EXPECT_EQ( value, 123 );
     }
 
