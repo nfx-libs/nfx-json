@@ -342,7 +342,7 @@ namespace nfx::json::test
 
         // Range-for on empty should not iterate
         int count = 0;
-        for( const auto& [key, value] : empty )
+        for( [[maybe_unused]] const auto& [key, value] : empty )
         {
             ++count;
         }
