@@ -400,13 +400,13 @@ namespace nfx::json::test
         EXPECT_FALSE( Document::fromString( R"({"text": "\uZZZZ"})" ).has_value() );
 
         // Incomplete escape sequences at end of string
-        EXPECT_FALSE( Document::fromString( R"({"text": "\u"})" ).has_value() );
-        EXPECT_FALSE( Document::fromString( R"({"text": "\u1"})" ).has_value() );
-        EXPECT_FALSE( Document::fromString( R"({"text": "\u12"})" ).has_value() );
-        EXPECT_FALSE( Document::fromString( R"({"text": "\u123"})" ).has_value() );
+        EXPECT_FALSE( Document::fromString( "{\"text\": \"\\u\"}" ).has_value() );
+        EXPECT_FALSE( Document::fromString( "{\"text\": \"\\u1\"}" ).has_value() );
+        EXPECT_FALSE( Document::fromString( "{\"text\": \"\\u12\"}" ).has_value() );
+        EXPECT_FALSE( Document::fromString( "{\"text\": \"\\u123\"}" ).has_value() );
 
         // Incomplete escape in middle of string
-        EXPECT_FALSE( Document::fromString( R"({"text": "Hello\u12World"})" ).has_value() );
+        EXPECT_FALSE( Document::fromString( "{\"text\": \"Hello\\u12World\"}" ).has_value() );
 
         // Mixed valid and invalid escapes
         EXPECT_FALSE( Document::fromString( R"({"text": "\u0041\uGGGG\u0042"})" ).has_value() );
