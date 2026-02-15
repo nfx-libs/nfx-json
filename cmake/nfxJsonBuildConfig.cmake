@@ -30,12 +30,6 @@ if(NOT NFX_JSON_BUILD_STATIC AND NOT NFX_JSON_BUILD_SHARED)
     endif()
 endif()
 
-# --- Extension tests require main tests to be enabled ---
-if(NFX_JSON_BUILD_EXTENSION_TESTS AND NOT NFX_JSON_BUILD_TESTS)
-    message(WARNING "NFX_JSON_BUILD_EXTENSION_TESTS requires NFX_JSON_BUILD_TESTS, disabling extension tests")
-    set(NFX_JSON_BUILD_EXTENSION_TESTS OFF CACHE BOOL "" FORCE)
-endif()
-
 #----------------------------------------------
 # Multi-config generator setup
 #----------------------------------------------
@@ -56,19 +50,13 @@ else()
 endif()
 
 #----------------------------------------------
-# Install prefix configuration
-#----------------------------------------------
-
-include(GNUInstallDirs)
-
-#----------------------------------------------
 # Directory configuration
 #----------------------------------------------
 
-set(NFX_JSON_DIR          "${PROJECT_SOURCE_DIR}"         CACHE PATH  "Root directory"     )
-set(NFX_JSON_INCLUDE_DIR  "${NFX_JSON_DIR}/include"       CACHE PATH  "Include directory"  )
-set(NFX_JSON_SOURCE_DIR   "${NFX_JSON_DIR}/src"           CACHE PATH  "Source directory"   )
-set(NFX_JSON_TESTDATA_DIR "${NFX_JSON_DIR}/test/testdata" CACHE PATH  "Test data directory")
+set(NFX_JSON_DIR          "${PROJECT_SOURCE_DIR}"         CACHE PATH "Root directory"     )
+set(NFX_JSON_INCLUDE_DIR  "${NFX_JSON_DIR}/include"       CACHE PATH "Include directory"  )
+set(NFX_JSON_SOURCE_DIR   "${NFX_JSON_DIR}/src"           CACHE PATH "Source directory"   )
+set(NFX_JSON_TESTDATA_DIR "${NFX_JSON_DIR}/test/testdata" CACHE PATH "Test data directory")
 
 #----------------------------------------------
 # Output directory configuration

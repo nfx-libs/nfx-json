@@ -44,7 +44,6 @@ set(NFX_JSON_VERSION       ${PROJECT_VERSION}       CACHE INTERNAL "nfx-json ver
 # Project metadata
 #----------------------------------------------
 
-set(NFX_JSON_LICENSE "MIT")
 set(NFX_JSON_LICENSE_FILE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 
 #----------------------------------------------
@@ -67,14 +66,10 @@ option(NFX_JSON_BUILD_SAMPLES       "Build samples"                     OFF)
 option(NFX_JSON_BUILD_BENCHMARKS    "Build benchmarks"                  OFF)
 option(NFX_JSON_BUILD_DOCUMENTATION "Build Doxygen documentation"       OFF)
 
-# --- Installation ---
+# --- Installation & packaging ---
 option(NFX_JSON_INSTALL_PROJECT     "Install project"                   OFF)
-
-# --- Packaging ---
 option(NFX_JSON_PACKAGE_SOURCE      "Enable source package generation"  OFF)
-option(NFX_JSON_PACKAGE_ARCHIVE     "Enable TGZ/ZIP package generation" OFF)
-option(NFX_JSON_PACKAGE_DEB         "Enable DEB package generation"     OFF)
-option(NFX_JSON_PACKAGE_RPM         "Enable RPM package generation"     OFF)
+
 
 #----------------------------------------------
 # CMake modules configuration
