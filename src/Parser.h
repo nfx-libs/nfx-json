@@ -541,8 +541,14 @@ namespace nfx::json
             if( isDouble )
             {
                 double value = 0.0;
+#ifdef __EMSCRIPTEN__
+                char* end;
+                value = std::strtod( numStr.data(), &end );
+                if( end != numStr.data() + numStr.size() )
+#else
                 auto ec = std::from_chars( numStr.data(), numStr.data() + numStr.size(), value ).ec;
                 if( ec != std::errc{} )
+#endif
                 {
                     throw std::runtime_error{ "Invalid number format" };
                 }
