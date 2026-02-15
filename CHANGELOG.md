@@ -26,6 +26,29 @@
 
 - NIL
 
+## [1.5.0] - 2026-02-15
+
+### Added
+
+- `NFX_JSON_ENABLE_SIMD` CMake option to control native CPU optimizations (enabled by default)
+- SIMD flag propagation to dependencies: nfx-containers, nfx-hashing, and nfx-stringbuilder
+- Build configuration status message indicating whether SIMD optimizations are enabled
+- WebAssembly/Emscripten support for floating-point number parsing using `std::strtod` fallback
+
+### Changed
+
+- CPU optimization flags (AVX2 for MSVC, -march=native for GCC/Clang) now only apply to Release/RelWithDebInfo builds when `NFX_JSON_ENABLE_SIMD=ON`
+- Bump nfx-containers from 0.5.1 to 0.6.0
+- Bump nfx-hashing from 0.3.1 to 0.4.0
+- Bump nfx-resource from 1.1.0 to 1.2.0
+- Bump nfx-stringbuilder from 0.6.2 to 0.7.0
+- Bump nfx-stringutils from 0.6.4 to 0.7.0
+
+### Removed
+
+- Obsolete "Installation & Packaging" section from README.md (packaging system was simplified in previous versions)
+- Obsolete DEB/RPM/ARCHIVE packaging options from dependency configurations
+
 ## [1.4.1] - 2026-02-14
 
 ### Fixed

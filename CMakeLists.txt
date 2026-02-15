@@ -9,7 +9,7 @@
 cmake_minimum_required(VERSION 3.20)
 
 project(nfx-json
-    VERSION 1.4.1
+    VERSION 1.5.0
     DESCRIPTION "Modern C++20 JSON library with schema validation and generation"
     HOMEPAGE_URL "https://github.com/nfx-libs/nfx-json"
     LANGUAGES CXX
@@ -65,6 +65,9 @@ option(NFX_JSON_BUILD_TESTS         "Build tests"                       OFF)
 option(NFX_JSON_BUILD_SAMPLES       "Build samples"                     OFF)
 option(NFX_JSON_BUILD_BENCHMARKS    "Build benchmarks"                  OFF)
 option(NFX_JSON_BUILD_DOCUMENTATION "Build Doxygen documentation"       OFF)
+
+# --- Performance options ---
+option(NFX_JSON_ENABLE_SIMD         "Enable native CPU optimizations"   ON )
 
 # --- Installation & packaging ---
 option(NFX_JSON_INSTALL_PROJECT     "Install project"                   OFF)
