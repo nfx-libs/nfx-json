@@ -102,12 +102,14 @@ function(configure_target target_name)
             DEBUG_POSTFIX "-d"
     )
 
-    # --- Enable specific CPU features ---
-    target_compile_options(${target_name}
-        PRIVATE
-            $<$<CXX_COMPILER_ID:MSVC>:/arch:AVX2>
-            $<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>>:-march=native>
-    )
+    # --- CPU optimizations (Release/RelWithDebInfo only) ---
+    if(NFX_JSON_ENABLE_SIMD)
+        target_compile_options(${target_name}
+            PRIVATE
+                $<$<AND:$<CXX_COMPILER_ID:MSVC>,$<OR:$<CONFIG:Release>,$<CONFIG:RelWithDebInfo>>>:/arch:AVX2>
+                $<$<AND:$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>>,$<OR:$<CONFIG:Release>,$<CONFIG:RelWithDebInfo>>>:-march=native>
+        )
+    endif()
 
     # --- Compiler warnings ---
     target_compile_options(${target_name}
@@ -136,4 +138,14 @@ endif()
 
 if(NFX_JSON_BUILD_STATIC)
     configure_target(${PROJECT_NAME}-static)
+endif()
+
+#----------------------------------------------
+# Build configuration summary
+#----------------------------------------------
+
+if(NFX_JSON_ENABLE_SIMD)
+    message(STATUS "nfx-json: Native CPU optimizations enabled (Release/RelWithDebInfo builds)")
+else()
+    message(STATUS "nfx-json: Native CPU optimizations disabled (suitable for WebAssembly)")
 endif()

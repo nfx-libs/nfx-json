@@ -18,11 +18,11 @@ set(CMAKE_FIND_QUIETLY      ON     )
 # Dependency versions
 #----------------------------------------------
 
-set(NFX_JSON_DEPS_NFX_CONTAINERS_VERSION    "0.5.1")
-set(NFX_JSON_DEPS_NFX_HASHING_VERSION       "0.3.1")
-set(NFX_JSON_DEPS_NFX_RESOURCE_VERSION      "1.1.0")
-set(NFX_JSON_DEPS_NFX_STRINGBUILDER_VERSION "0.6.2")
-set(NFX_JSON_DEPS_NFX_STRINGUTILS_VERSION   "0.6.4")
+set(NFX_JSON_DEPS_NFX_CONTAINERS_VERSION    "0.6.0")
+set(NFX_JSON_DEPS_NFX_HASHING_VERSION       "0.4.0")
+set(NFX_JSON_DEPS_NFX_RESOURCE_VERSION      "1.2.0")
+set(NFX_JSON_DEPS_NFX_STRINGBUILDER_VERSION "0.7.0")
+set(NFX_JSON_DEPS_NFX_STRINGUTILS_VERSION   "0.7.0")
 
 #----------------------------------------------
 # FetchContent dependencies
@@ -50,8 +50,7 @@ if(NOT nfx-containers_FOUND)
     FetchContent_Declare(
         nfx-containers
             GIT_REPOSITORY https://github.com/nfx-libs/nfx-containers
-            #GIT_TAG        ${NFX_JSON_DEPS_NFX_CONTAINERS_VERSION}
-            GIT_TAG        main
+            GIT_TAG        ${NFX_JSON_DEPS_NFX_CONTAINERS_VERSION}
             GIT_SHALLOW    TRUE
             EXCLUDE_FROM_ALL
     )
@@ -97,6 +96,7 @@ endif()
 # --- nfx-stringbuilder ---
 find_package(nfx-stringbuilder ${NFX_JSON_DEPS_NFX_STRINGBUILDER_VERSION} QUIET)
 if(NOT nfx-stringbuilder_FOUND)
+    set(NFX_STRINGBUILDER_ENABLE_SIMD         ${NFX_JSON_ENABLE_SIMD} CACHE BOOL "")
     set(NFX_STRINGBUILDER_BUILD_STATIC        ON  CACHE BOOL "")
     set(NFX_STRINGBUILDER_BUILD_SHARED        OFF CACHE BOOL "")
     set(NFX_STRINGBUILDER_BUILD_TESTS         OFF CACHE BOOL "")

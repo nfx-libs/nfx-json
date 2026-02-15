@@ -2,7 +2,7 @@
 
 <!-- Project Info -->
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://github.com/nfx-libs/nfx-json/blob/main/LICENSE.txt) [![GitHub release (latest by date)](https://img.shields.io/github/v/release/nfx-libs/nfx-json?style=flat-square)](https://github.com/nfx-libs/nfx-json/releases) [![GitHub tag (latest by date)](https://img.shields.io/github/tag/nfx-libs/nfx-json?style=flat-square)](https://github.com/nfx-libs/nfx-json/tags)<br/>
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://github.com/nfx-libs/nfx-json/blob/main/LICENSE) [![GitHub release (latest by date)](https://img.shields.io/github/v/release/nfx-libs/nfx-json?style=flat-square)](https://github.com/nfx-libs/nfx-json/releases) [![GitHub tag (latest by date)](https://img.shields.io/github/tag/nfx-libs/nfx-json?style=flat-square)](https://github.com/nfx-libs/nfx-json/tags)<br/>
 
 ![C++20](https://img.shields.io/badge/C%2B%2B-20-blue?style=flat-square) ![CMake](https://img.shields.io/badge/CMake-3.20%2B-green.svg?style=flat-square) ![Cross Platform](https://img.shields.io/badge/Platform-Linux_Windows-lightgrey?style=flat-square)
 
@@ -97,14 +97,12 @@ option(NFX_JSON_BUILD_SAMPLES       "Build samples"                     OFF)
 option(NFX_JSON_BUILD_BENCHMARKS    "Build benchmarks"                  OFF)
 option(NFX_JSON_BUILD_DOCUMENTATION "Build Doxygen documentation"       OFF)
 
-# --- Installation ---
-option(NFX_JSON_INSTALL_PROJECT     "Install project"                   OFF)
+# --- Performance options ---
+option(NFX_JSON_ENABLE_SIMD         "Enable native CPU optimizations"   ON )
 
-# --- Packaging ---
+# --- Installation & packaging ---
+option(NFX_JSON_INSTALL_PROJECT     "Install project"                   OFF)
 option(NFX_JSON_PACKAGE_SOURCE      "Enable source package generation"  OFF)
-option(NFX_JSON_PACKAGE_ARCHIVE     "Enable TGZ/ZIP package generation" OFF)
-option(NFX_JSON_PACKAGE_DEB         "Enable DEB package generation"     OFF)
-option(NFX_JSON_PACKAGE_RPM         "Enable RPM package generation"     OFF)
 ```
 
 ### Using in Your Project
@@ -490,55 +488,6 @@ Updated config:
 }
 ```
 
-## Installation & Packaging
-
-nfx-json provides packaging options for distribution.
-
-### Package Generation
-
-```bash
-# Configure with packaging options
-cmake .. -DCMAKE_BUILD_TYPE=Release \
-         -DNFX_JSON_BUILD_STATIC=ON \
-         -DNFX_JSON_BUILD_SHARED=ON \
-         -DNFX_JSON_PACKAGE_ARCHIVE=ON \
-         -DNFX_JSON_PACKAGE_DEB=ON \
-         -DNFX_JSON_PACKAGE_RPM=ON
-
-# Generate binary packages
-cmake --build . --target package
-# or
-cd build && cpack
-
-# Generate source packages
-cd build && cpack --config CPackSourceConfig.cmake
-```
-
-### Supported Package Formats
-
-| Format      | Platform       | Description                        | Requirements |
-| ----------- | -------------- | ---------------------------------- | ------------ |
-| **TGZ/ZIP** | Cross-platform | Compressed archive packages        | None         |
-| **DEB**     | Debian/Ubuntu  | Native Debian packages             | `dpkg-dev`   |
-| **RPM**     | RedHat/SUSE    | Native RPM packages                | `rpm-build`  |
-| **Source**  | Cross-platform | Source code distribution (TGZ+ZIP) | None         |
-
-### Installation
-
-```bash
-# Linux (DEB-based systems)
-sudo dpkg -i nfx-json_*_amd64.deb
-
-# Linux (RPM-based systems)
-sudo rpm -ivh nfx-json-*-Linux.rpm
-
-# Windows (extract ZIP archive)
-Expand-Archive nfx-json-*-Windows.zip -DestinationPath C:\nfx\
-
-# Manual installation (extract archive)
-tar -xzf nfx-json-*-Linux.tar.gz -C /usr/local/
-```
-
 ## Project Structure
 
 ```
@@ -586,4 +535,4 @@ All dependencies are automatically fetched via CMake FetchContent when building 
 
 ---
 
-_Updated on February 04, 2026_
+_Updated on February 15, 2026_
