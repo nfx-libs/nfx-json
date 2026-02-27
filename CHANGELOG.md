@@ -26,6 +26,18 @@
 
 - NIL
 
+## [1.5.1] - 2026-02-27
+
+### Changed
+
+- Explicitly set `CMAKE_CXX_STANDARD 20`, `CMAKE_CXX_STANDARD_REQUIRED ON`, and `CMAKE_EXPORT_COMPILE_COMMANDS ON` in top-level `CMakeLists.txt`
+
+### Fixed
+
+- `Document::get<Document>()`: handle `Document` type before other types to avoid unnecessary type check
+- `Document::getRef<T>()` (const and mutable): move `return std::nullopt` inside the `else` branch to fix unreachable code
+- `Document::is<T>()`: replace final `else if constexpr (Object)` with `else` + `static_assert` to enforce compile-time completeness and remove dead `return false`
+
 ## [1.5.0] - 2026-02-15
 
 ### Added

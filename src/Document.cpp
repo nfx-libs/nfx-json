@@ -313,186 +313,190 @@ namespace nfx::json
             return std::nullopt;
         }
 
-        // Type-specific extraction using if constexpr
-        if constexpr( std::is_same_v<std::decay_t<T>, std::string> )
-        {
-            if( node->type() == Type::String )
-            {
-                return std::get<std::string>( node->m_data );
-            }
-        }
-        else if constexpr( std::is_same_v<std::decay_t<T>, bool> )
-        {
-            if( node->type() == Type::Boolean )
-            {
-                return std::get<bool>( node->m_data );
-            }
-        }
-        else if constexpr( std::is_same_v<std::decay_t<T>, char> )
-        {
-            if( node->type() == Type::String )
-            {
-                const auto& str = std::get<std::string>( node->m_data );
-                if( str.length() == 1 )
-                {
-                    return str[0];
-                }
-            }
-        }
-        else if constexpr( std::is_same_v<std::decay_t<T>, int8_t> )
-        {
-            if( node->type() == Type::Integer )
-            {
-                int64_t val = std::get<int64_t>( node->m_data );
-                if( val >= std::numeric_limits<int8_t>::min() && val <= std::numeric_limits<int8_t>::max() )
-                {
-                    return static_cast<int8_t>( val );
-                }
-            }
-        }
-        else if constexpr( std::is_same_v<std::decay_t<T>, int16_t> )
-        {
-            if( node->type() == Type::Integer )
-            {
-                int64_t val = std::get<int64_t>( node->m_data );
-                if( val >= std::numeric_limits<int16_t>::min() && val <= std::numeric_limits<int16_t>::max() )
-                {
-                    return static_cast<int16_t>( val );
-                }
-            }
-        }
-        else if constexpr( std::is_same_v<std::decay_t<T>, int32_t> )
-        {
-            if( node->type() == Type::Integer )
-            {
-                return static_cast<int32_t>( std::get<int64_t>( node->m_data ) );
-            }
-        }
-        else if constexpr( std::is_same_v<std::decay_t<T>, int64_t> )
-        {
-            if( node->type() == Type::Integer )
-            {
-                return std::get<int64_t>( node->m_data );
-            }
-            else if( node->type() == Type::Double )
-            {
-                return static_cast<int64_t>( std::get<double>( node->m_data ) );
-            }
-        }
-        else if constexpr( std::is_same_v<std::decay_t<T>, uint8_t> )
-        {
-            if( node->type() == Type::UnsignedInteger )
-            {
-                uint64_t val = std::get<uint64_t>( node->m_data );
-                if( val <= std::numeric_limits<uint8_t>::max() )
-                {
-                    return static_cast<uint8_t>( val );
-                }
-            }
-            else if( node->type() == Type::Integer )
-            {
-                int64_t val = std::get<int64_t>( node->m_data );
-                if( val >= 0 && val <= std::numeric_limits<uint8_t>::max() )
-                {
-                    return static_cast<uint8_t>( val );
-                }
-            }
-        }
-        else if constexpr( std::is_same_v<std::decay_t<T>, uint16_t> )
-        {
-            if( node->type() == Type::UnsignedInteger )
-            {
-                uint64_t val = std::get<uint64_t>( node->m_data );
-                if( val <= std::numeric_limits<uint16_t>::max() )
-                {
-                    return static_cast<uint16_t>( val );
-                }
-            }
-            else if( node->type() == Type::Integer )
-            {
-                int64_t val = std::get<int64_t>( node->m_data );
-                if( val >= 0 && val <= std::numeric_limits<uint16_t>::max() )
-                {
-                    return static_cast<uint16_t>( val );
-                }
-            }
-        }
-        else if constexpr( std::is_same_v<std::decay_t<T>, uint32_t> )
-        {
-            if( node->type() == Type::UnsignedInteger )
-            {
-                uint64_t val = std::get<uint64_t>( node->m_data );
-                if( val <= std::numeric_limits<uint32_t>::max() )
-                {
-                    return static_cast<uint32_t>( val );
-                }
-            }
-            else if( node->type() == Type::Integer )
-            {
-                int64_t val = std::get<int64_t>( node->m_data );
-                if( val >= 0 && val <= std::numeric_limits<uint32_t>::max() )
-                {
-                    return static_cast<uint32_t>( val );
-                }
-            }
-        }
-        else if constexpr( std::is_same_v<std::decay_t<T>, uint64_t> )
-        {
-            if( node->type() == Type::UnsignedInteger )
-            {
-                return std::get<uint64_t>( node->m_data );
-            }
-        }
-        else if constexpr( std::is_same_v<std::decay_t<T>, float> )
-        {
-            if( node->type() == Type::Double )
-            {
-                return static_cast<float>( std::get<double>( node->m_data ) );
-            }
-            else if( node->type() == Type::Integer )
-            {
-                return static_cast<float>( std::get<int64_t>( node->m_data ) );
-            }
-            else if( node->type() == Type::UnsignedInteger )
-            {
-                return static_cast<float>( std::get<uint64_t>( node->m_data ) );
-            }
-        }
-        else if constexpr( std::is_same_v<std::decay_t<T>, double> )
-        {
-            if( node->type() == Type::Double )
-            {
-                return std::get<double>( node->m_data );
-            }
-            else if( node->type() == Type::Integer )
-            {
-                return static_cast<double>( std::get<int64_t>( node->m_data ) );
-            }
-            else if( node->type() == Type::UnsignedInteger )
-            {
-                return static_cast<double>( std::get<uint64_t>( node->m_data ) );
-            }
-        }
-        else if constexpr( std::is_same_v<std::decay_t<T>, Document> )
+        // Document type: return node directly (no type check needed)
+        if constexpr( std::is_same_v<std::decay_t<T>, Document> )
         {
             return *node;
         }
-        else if constexpr( std::is_same_v<std::decay_t<T>, Array> )
+        else
         {
-            if( node->type() == Type::Array )
+            // Type-specific extraction using if constexpr
+            if constexpr( std::is_same_v<std::decay_t<T>, std::string> )
             {
-                return std::get<Array>( node->m_data );
+                if( node->type() == Type::String )
+                {
+                    return std::get<std::string>( node->m_data );
+                }
             }
-        }
-        else if constexpr( std::is_same_v<std::decay_t<T>, Object> )
-        {
-            if( node->type() == Type::Object )
+            else if constexpr( std::is_same_v<std::decay_t<T>, bool> )
             {
-                return std::get<Object>( node->m_data );
+                if( node->type() == Type::Boolean )
+                {
+                    return std::get<bool>( node->m_data );
+                }
             }
-        }
+            else if constexpr( std::is_same_v<std::decay_t<T>, char> )
+            {
+                if( node->type() == Type::String )
+                {
+                    const auto& str = std::get<std::string>( node->m_data );
+                    if( str.length() == 1 )
+                    {
+                        return str[0];
+                    }
+                }
+            }
+            else if constexpr( std::is_same_v<std::decay_t<T>, int8_t> )
+            {
+                if( node->type() == Type::Integer )
+                {
+                    int64_t val = std::get<int64_t>( node->m_data );
+                    if( val >= std::numeric_limits<int8_t>::min() && val <= std::numeric_limits<int8_t>::max() )
+                    {
+                        return static_cast<int8_t>( val );
+                    }
+                }
+            }
+            else if constexpr( std::is_same_v<std::decay_t<T>, int16_t> )
+            {
+                if( node->type() == Type::Integer )
+                {
+                    int64_t val = std::get<int64_t>( node->m_data );
+                    if( val >= std::numeric_limits<int16_t>::min() && val <= std::numeric_limits<int16_t>::max() )
+                    {
+                        return static_cast<int16_t>( val );
+                    }
+                }
+            }
+            else if constexpr( std::is_same_v<std::decay_t<T>, int32_t> )
+            {
+                if( node->type() == Type::Integer )
+                {
+                    return static_cast<int32_t>( std::get<int64_t>( node->m_data ) );
+                }
+            }
+            else if constexpr( std::is_same_v<std::decay_t<T>, int64_t> )
+            {
+                if( node->type() == Type::Integer )
+                {
+                    return std::get<int64_t>( node->m_data );
+                }
+                else if( node->type() == Type::Double )
+                {
+                    return static_cast<int64_t>( std::get<double>( node->m_data ) );
+                }
+            }
+            else if constexpr( std::is_same_v<std::decay_t<T>, uint8_t> )
+            {
+                if( node->type() == Type::UnsignedInteger )
+                {
+                    uint64_t val = std::get<uint64_t>( node->m_data );
+                    if( val <= std::numeric_limits<uint8_t>::max() )
+                    {
+                        return static_cast<uint8_t>( val );
+                    }
+                }
+                else if( node->type() == Type::Integer )
+                {
+                    int64_t val = std::get<int64_t>( node->m_data );
+                    if( val >= 0 && val <= std::numeric_limits<uint8_t>::max() )
+                    {
+                        return static_cast<uint8_t>( val );
+                    }
+                }
+            }
+            else if constexpr( std::is_same_v<std::decay_t<T>, uint16_t> )
+            {
+                if( node->type() == Type::UnsignedInteger )
+                {
+                    uint64_t val = std::get<uint64_t>( node->m_data );
+                    if( val <= std::numeric_limits<uint16_t>::max() )
+                    {
+                        return static_cast<uint16_t>( val );
+                    }
+                }
+                else if( node->type() == Type::Integer )
+                {
+                    int64_t val = std::get<int64_t>( node->m_data );
+                    if( val >= 0 && val <= std::numeric_limits<uint16_t>::max() )
+                    {
+                        return static_cast<uint16_t>( val );
+                    }
+                }
+            }
+            else if constexpr( std::is_same_v<std::decay_t<T>, uint32_t> )
+            {
+                if( node->type() == Type::UnsignedInteger )
+                {
+                    uint64_t val = std::get<uint64_t>( node->m_data );
+                    if( val <= std::numeric_limits<uint32_t>::max() )
+                    {
+                        return static_cast<uint32_t>( val );
+                    }
+                }
+                else if( node->type() == Type::Integer )
+                {
+                    int64_t val = std::get<int64_t>( node->m_data );
+                    if( val >= 0 && val <= std::numeric_limits<uint32_t>::max() )
+                    {
+                        return static_cast<uint32_t>( val );
+                    }
+                }
+            }
+            else if constexpr( std::is_same_v<std::decay_t<T>, uint64_t> )
+            {
+                if( node->type() == Type::UnsignedInteger )
+                {
+                    return std::get<uint64_t>( node->m_data );
+                }
+            }
+            else if constexpr( std::is_same_v<std::decay_t<T>, float> )
+            {
+                if( node->type() == Type::Double )
+                {
+                    return static_cast<float>( std::get<double>( node->m_data ) );
+                }
+                else if( node->type() == Type::Integer )
+                {
+                    return static_cast<float>( std::get<int64_t>( node->m_data ) );
+                }
+                else if( node->type() == Type::UnsignedInteger )
+                {
+                    return static_cast<float>( std::get<uint64_t>( node->m_data ) );
+                }
+            }
+            else if constexpr( std::is_same_v<std::decay_t<T>, double> )
+            {
+                if( node->type() == Type::Double )
+                {
+                    return std::get<double>( node->m_data );
+                }
+                else if( node->type() == Type::Integer )
+                {
+                    return static_cast<double>( std::get<int64_t>( node->m_data ) );
+                }
+                else if( node->type() == Type::UnsignedInteger )
+                {
+                    return static_cast<double>( std::get<uint64_t>( node->m_data ) );
+                }
+            }
+            else if constexpr( std::is_same_v<std::decay_t<T>, Array> )
+            {
+                if( node->type() == Type::Array )
+                {
+                    return std::get<Array>( node->m_data );
+                }
+            }
+            else if constexpr( std::is_same_v<std::decay_t<T>, Object> )
+            {
+                if( node->type() == Type::Object )
+                {
+                    return std::get<Object>( node->m_data );
+                }
+            }
 
-        return std::nullopt;
+            return std::nullopt;
+        }
     }
 
     // Explicit template instantiations for get<T>(path)
@@ -582,9 +586,8 @@ namespace nfx::json
             {
                 return std::cref( std::get<T>( node->m_data ) );
             }
+            return std::nullopt;
         }
-
-        return std::nullopt;
     }
 
     // Explicit template instantiations for getRef<T>(path) const
@@ -641,9 +644,8 @@ namespace nfx::json
             {
                 return std::ref( std::get<T>( node->m_data ) );
             }
+            return std::nullopt;
         }
-
-        return std::nullopt;
     }
 
     // Explicit template instantiations for getRef<T>(path) mutable
@@ -967,12 +969,11 @@ namespace nfx::json
         {
             return node->type() == Type::Array;
         }
-        else if constexpr( std::is_same_v<std::decay_t<T>, Object> )
+        else
         {
+            static_assert( std::is_same_v<std::decay_t<T>, Object> );
             return node->type() == Type::Object;
         }
-
-        return false;
     }
 
     // Explicit template instantiations for is<T>(path)
