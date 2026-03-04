@@ -25,6 +25,12 @@
 ### Security
 
 - NIL
+- 
+## [1.5.2] - 2026-03-04
+
+### Changed
+
+- Bump nfx-resource from 1.2.0 to 1.3.0
 
 ## [1.5.1] - 2026-02-27
 
